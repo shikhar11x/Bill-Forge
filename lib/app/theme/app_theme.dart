@@ -5,16 +5,16 @@ import 'package:billforge/app/theme/app_spacing.dart';
 
 abstract final class AppTheme {
   static ThemeData dark({Color accent = AppColors.defaultAccent}) => _build(
-        brightness: Brightness.dark,
-        palette: AppPalette.dark,
-        accent: accent,
-      );
+    brightness: Brightness.dark,
+    palette: AppPalette.dark,
+    accent: accent,
+  );
 
   static ThemeData light({Color accent = AppColors.defaultAccent}) => _build(
-        brightness: Brightness.light,
-        palette: AppPalette.light,
-        accent: accent,
-      );
+    brightness: Brightness.light,
+    palette: AppPalette.light,
+    accent: accent,
+  );
 
   static ThemeData _build({
     required Brightness brightness,
@@ -39,6 +39,7 @@ abstract final class AppTheme {
 
     final base = ThemeData(
       useMaterial3: true,
+      fontFamily: 'Inter',
       brightness: brightness,
       colorScheme: scheme,
       scaffoldBackgroundColor: palette.background,
@@ -118,6 +119,29 @@ abstract final class AppTheme {
             vertical: AppSpacing.lg,
           ),
         ),
+      ),
+      outlinedButtonTheme: OutlinedButtonThemeData(
+        style: OutlinedButton.styleFrom(
+          shape: shape,
+          foregroundColor: palette.textPrimary,
+          side: BorderSide(color: palette.border),
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.xl,
+            vertical: AppSpacing.lg,
+          ),
+        ),
+      ),
+      popupMenuTheme: PopupMenuThemeData(
+        color: palette.surfaceRaised,
+        surfaceTintColor: Colors.transparent,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppRadius.md),
+          side: BorderSide(color: palette.border),
+        ),
+      ),
+      bottomSheetTheme: BottomSheetThemeData(
+        backgroundColor: palette.surfaceRaised,
+        surfaceTintColor: Colors.transparent,
       ),
       snackBarTheme: SnackBarThemeData(
         behavior: SnackBarBehavior.floating,

@@ -2,9 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:billforge/app/shell/app_sidebar.dart';
+import 'package:billforge/app/shell/app_top_bar.dart';
+import 'package:billforge/app/shell/notifications_button.dart';
+import 'package:billforge/app/shell/profile_menu.dart';
 import 'package:billforge/app/shell/shell_destinations.dart';
+import 'package:billforge/app/theme/app_spacing.dart';
 import 'package:billforge/core/constants/app_constants.dart';
-import 'package:billforge/core/responsive/breakpoints.dart';
 import 'package:billforge/core/responsive/responsive_builder.dart';
 
 class AppShell extends StatelessWidget {
@@ -13,52 +16,67 @@ class AppShell extends StatelessWidget {
   final String location;
   final Widget child;
 
-  int get _selectedIndex {
-    final index = shellDestinations.indexWhere(
-      (d) => d.path == '/' ? location == '/' : location.startsWith(d.path),
-    );
-    return index < 0 ? 0 : index;
+  String get _title {
+    for (final d in shellDestinations) {
+      if (d.matches(location)) return d.label;
+    }
+    return AppConstants.appName;
   }
-
-  void _onSelected(BuildContext context, int index) =>
-      context.go(shellDestinations[index].path);
 
   @override
   Widget build(BuildContext context) {
     return ResponsiveBuilder(
       builder: (context, size) {
         if (size.isMobile) {
+          final bottom = [
+            for (final d in shellDestinations)
+              if (d.showInBottomNav) d,
+          ];
+          final selected = bottom.indexWhere((d) => d.matches(location));
           return Scaffold(
-            appBar: AppBar(title: const Text(AppConstants.appName)),
+            appBar: AppBar(
+              title: Text(_title),
+              actions: const [
+                NotificationsButton(),
+                ProfileMenu(),
+                SizedBox(width: AppSpacing.sm),
+              ],
+            ),
             body: child,
-            // NavigationBar requires at least two destinations.
-            bottomNavigationBar: shellDestinations.length >= 2
-                ? NavigationBar(
-                    selectedIndex: _selectedIndex,
-                    onDestinationSelected: (i) => _onSelected(context, i),
-                    destinations: [
-                      for (final d in shellDestinations)
-                        NavigationDestination(
-                          icon: Icon(d.icon),
-                          selectedIcon: Icon(d.selectedIcon),
-                          label: d.label,
-                        ),
-                    ],
-                  )
-                : null,
+            bottomNavigationBar: NavigationBar(
+              selectedIndex: selected < 0 ? 0 : selected,
+              onDestinationSelected: (i) => context.go(bottom[i].path),
+              destinations: [
+                for (final d in bottom)
+                  NavigationDestination(
+                    icon: Icon(d.icon),
+                    selectedIcon: Icon(d.selectedIcon),
+                    label: d.label,
+                  ),
+              ],
+            ),
           );
         }
 
+        final selectedIndex =
+            shellDestinations.indexWhere((d) => d.matches(location));
         return Scaffold(
           body: Row(
             children: [
               AppSidebar(
                 collapsed: size.isTablet,
-                selectedIndex: _selectedIndex,
-                onSelected: (i) => _onSelected(context, i),
+                selectedIndex: selectedIndex,
+                onSelected: (i) => context.go(shellDestinations[i].path),
               ),
               const VerticalDivider(width: 1),
-              Expanded(child: child),
+              Expanded(
+                child: Column(
+                  children: [
+                    AppTopBar(title: _title),
+                    Expanded(child: child),
+                  ],
+                ),
+              ),
             ],
           ),
         );

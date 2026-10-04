@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:billforge/app/shell/shell_destinations.dart';
 import 'package:billforge/app/theme/app_spacing.dart';
 import 'package:billforge/core/constants/app_constants.dart';
+import 'package:billforge/core/widgets/brand_mark.dart';
 
 class AppSidebar extends StatelessWidget {
   const AppSidebar({
@@ -16,13 +17,27 @@ class AppSidebar extends StatelessWidget {
   final int selectedIndex;
   final ValueChanged<int> onSelected;
 
+  Widget _item(int i) => _SidebarItem(
+        destination: shellDestinations[i],
+        selected: i == selectedIndex,
+        collapsed: collapsed,
+        onTap: () => onSelected(i),
+      );
+
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
+    final main = [
+      for (var i = 0; i < shellDestinations.length; i++)
+        if (!shellDestinations[i].pinnedToBottom) i,
+    ];
+    final pinned = [
+      for (var i = 0; i < shellDestinations.length; i++)
+        if (shellDestinations[i].pinnedToBottom) i,
+    ];
+
     return Container(
-      width: collapsed
-          ? AppLayout.sidebarCollapsedWidth
-          : AppLayout.sidebarWidth,
+      width: collapsed ? AppLayout.sidebarCollapsedWidth : AppLayout.sidebarWidth,
       color: scheme.surface,
       child: SafeArea(
         child: Column(
@@ -33,16 +48,13 @@ class AppSidebar extends StatelessWidget {
             Expanded(
               child: ListView(
                 padding: const EdgeInsets.all(AppSpacing.sm),
-                children: [
-                  for (var i = 0; i < shellDestinations.length; i++)
-                    _SidebarItem(
-                      destination: shellDestinations[i],
-                      selected: i == selectedIndex,
-                      collapsed: collapsed,
-                      onTap: () => onSelected(i),
-                    ),
-                ],
+                children: [for (final i in main) _item(i)],
               ),
+            ),
+            const Divider(),
+            Padding(
+              padding: const EdgeInsets.all(AppSpacing.sm),
+              child: Column(children: [for (final i in pinned) _item(i)]),
             ),
           ],
         ),
@@ -58,33 +70,24 @@ class _Brand extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final mark = Container(
-      width: 32,
-      height: 32,
-      alignment: Alignment.center,
-      decoration: BoxDecoration(
-        color: theme.colorScheme.primary,
-        borderRadius: BorderRadius.circular(AppRadius.sm),
-      ),
-      child: const Text(
-        'B',
-        style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700),
-      ),
-    );
-
-    return Padding(
-      padding: const EdgeInsets.all(AppSpacing.lg),
-      child: Row(
-        mainAxisAlignment:
-            collapsed ? MainAxisAlignment.center : MainAxisAlignment.start,
-        children: [
-          mark,
-          if (!collapsed) ...[
-            const SizedBox(width: AppSpacing.md),
-            Text(AppConstants.appName, style: theme.textTheme.titleMedium),
+    return SizedBox(
+      height: 56,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+        child: Row(
+          mainAxisAlignment:
+              collapsed ? MainAxisAlignment.center : MainAxisAlignment.start,
+          children: [
+            const BrandMark(),
+            if (!collapsed) ...[
+              const SizedBox(width: AppSpacing.md),
+              Text(
+                AppConstants.appName,
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+            ],
           ],
-        ],
+        ),
       ),
     );
   }
@@ -108,30 +111,6 @@ class _SidebarItem extends StatelessWidget {
     final scheme = Theme.of(context).colorScheme;
     final color = selected ? scheme.primary : scheme.onSurfaceVariant;
 
-    final content = Padding(
-      padding: const EdgeInsets.symmetric(
-        horizontal: AppSpacing.md,
-        vertical: AppSpacing.md,
-      ),
-      child: Row(
-        mainAxisAlignment:
-            collapsed ? MainAxisAlignment.center : MainAxisAlignment.start,
-        children: [
-          Icon(selected ? destination.selectedIcon : destination.icon, color: color),
-          if (!collapsed) ...[
-            const SizedBox(width: AppSpacing.md),
-            Text(
-              destination.label,
-              style: TextStyle(
-                color: selected ? scheme.onSurface : color,
-                fontWeight: selected ? FontWeight.w600 : FontWeight.w500,
-              ),
-            ),
-          ],
-        ],
-      ),
-    );
-
     return Padding(
       padding: const EdgeInsets.only(bottom: AppSpacing.xs),
       child: Semantics(
@@ -148,7 +127,31 @@ class _SidebarItem extends StatelessWidget {
             child: InkWell(
               borderRadius: BorderRadius.circular(AppRadius.md),
               onTap: onTap,
-              child: content,
+              child: Padding(
+                padding: const EdgeInsets.all(AppSpacing.md),
+                child: Row(
+                  mainAxisAlignment: collapsed
+                      ? MainAxisAlignment.center
+                      : MainAxisAlignment.start,
+                  children: [
+                    Icon(
+                      selected ? destination.selectedIcon : destination.icon,
+                      color: color,
+                    ),
+                    if (!collapsed) ...[
+                      const SizedBox(width: AppSpacing.md),
+                      Text(
+                        destination.label,
+                        style: TextStyle(
+                          color: selected ? scheme.onSurface : color,
+                          fontWeight:
+                              selected ? FontWeight.w600 : FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
             ),
           ),
         ),
