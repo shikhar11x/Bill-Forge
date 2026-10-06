@@ -7,6 +7,8 @@ abstract final class AppRoutes {
 
   static const dashboard = '/dashboard';
   static const billing = '/billing';
+  static const billingNew = '/billing/new';
+  static String invoice(String id) => '/billing/$id';
   static const products = '/products';
   static const productNew = '/products/new';
   static String productEdit(String id) => '/products/$id/edit';

@@ -11,6 +11,9 @@ import 'package:billforge/features/auth/domain/auth_state.dart';
 import 'package:billforge/features/auth/presentation/login_page.dart';
 import 'package:billforge/features/auth/presentation/register_page.dart';
 import 'package:billforge/features/auth/presentation/splash_page.dart';
+import 'package:billforge/features/billing/presentation/billing_page.dart';
+import 'package:billforge/features/billing/presentation/invoice_detail_page.dart';
+import 'package:billforge/features/billing/presentation/pos_page.dart';
 import 'package:billforge/features/customers/presentation/customer_form_page.dart';
 import 'package:billforge/features/customers/presentation/customers_page.dart';
 import 'package:billforge/features/dashboard/presentation/dashboard_page.dart';
@@ -104,12 +107,28 @@ final routerProvider = Provider<GoRouter>((ref) {
             AppShell(location: state.uri.path, child: child),
         routes: [
           _shellRoute(AppRoutes.dashboard, const DashboardPage()),
-          _shellRoute(
-            AppRoutes.billing,
-            const ComingSoonPage(
-              title: 'Billing',
-              icon: Icons.receipt_long_rounded,
-            ),
+          GoRoute(
+            path: AppRoutes.billing,
+            pageBuilder: (context, state) =>
+                _noTransition(state, const BillingPage()),
+            routes: [
+              // 'new' must stay above ':id' so it isn't read as an invoice id.
+              GoRoute(
+                path: 'new',
+                pageBuilder: (context, state) =>
+                    _noTransition(state, const PosPage()),
+              ),
+              GoRoute(
+                path: ':id',
+                pageBuilder: (context, state) {
+                  final id = state.pathParameters['id']!;
+                  return _noTransition(
+                    state,
+                    InvoiceDetailPage(key: ValueKey(id), invoiceId: id),
+                  );
+                },
+              ),
+            ],
           ),
           GoRoute(
             path: AppRoutes.products,

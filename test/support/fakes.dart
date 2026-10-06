@@ -42,6 +42,7 @@ Product sampleProduct({
   String id = 'p1',
   String name = 'Parle-G Biscuits',
   String? sku,
+  String? barcode,
   int sellingPricePaise = 1000,
   bool trackStock = true,
   int stockMilli = 10000,
@@ -51,6 +52,7 @@ Product sampleProduct({
   id: id,
   name: name,
   sku: sku,
+  barcode: barcode,
   sellingPricePaise: sellingPricePaise,
   trackStock: trackStock,
   stockMilli: stockMilli,
@@ -75,7 +77,8 @@ class FakeProductRepository implements ProductRepository {
           (p) =>
               search.isEmpty ||
               p.name.toLowerCase().contains(search) ||
-              (p.sku ?? '').toLowerCase().contains(search),
+              (p.sku ?? '').toLowerCase().contains(search) ||
+              (p.barcode ?? '').toLowerCase().contains(search),
         )
         .take(query.limit)
         .toList();

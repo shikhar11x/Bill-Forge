@@ -6,6 +6,9 @@ class AppSearchField extends StatefulWidget {
   const AppSearchField({
     required this.controller,
     required this.onChanged,
+    this.onSubmitted,
+    this.focusNode,
+    this.autofocus = false,
     this.hint = 'Search',
     this.debounce = const Duration(milliseconds: 300),
     super.key,
@@ -15,6 +18,11 @@ class AppSearchField extends StatefulWidget {
 
   /// Called once the user pauses typing (debounced), or immediately on clear.
   final ValueChanged<String> onChanged;
+
+  /// Called on Enter (e.g. a barcode scanner finishing a scan).
+  final ValueChanged<String>? onSubmitted;
+  final FocusNode? focusNode;
+  final bool autofocus;
   final String hint;
   final Duration debounce;
 
@@ -36,6 +44,11 @@ class _AppSearchFieldState extends State<AppSearchField> {
     _timer = Timer(widget.debounce, () => widget.onChanged(value));
   }
 
+  void _handleSubmitted(String value) {
+    _timer?.cancel();
+    widget.onSubmitted?.call(value);
+  }
+
   void _clear() {
     _timer?.cancel();
     widget.controller.clear();
@@ -48,7 +61,10 @@ class _AppSearchFieldState extends State<AppSearchField> {
       listenable: widget.controller,
       builder: (context, _) => TextField(
         controller: widget.controller,
+        focusNode: widget.focusNode,
+        autofocus: widget.autofocus,
         onChanged: _handleChanged,
+        onSubmitted: widget.onSubmitted == null ? null : _handleSubmitted,
         textInputAction: TextInputAction.search,
         decoration: InputDecoration(
           hintText: widget.hint,
