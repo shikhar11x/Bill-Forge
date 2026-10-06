@@ -31,6 +31,12 @@ final class StorageFailure extends Failure {
   }) : super(message);
 }
 
+/// The requested change clashes with existing data (e.g. duplicate SKU).
+/// The message is safe to show to the user.
+final class ConflictFailure extends Failure {
+  const ConflictFailure(super.message, {super.cause});
+}
+
 final class UnexpectedFailure extends Failure {
   const UnexpectedFailure({
     String message = 'An unexpected error occurred.',

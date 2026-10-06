@@ -38,10 +38,9 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     setState(() => _loading = true);
     try {
       // On success the router redirect replaces this page.
-      await ref.read(authControllerProvider.notifier).signIn(
-            email: _email.text,
-            password: _password.text,
-          );
+      await ref
+          .read(authControllerProvider.notifier)
+          .signIn(email: _email.text, password: _password.text);
     } catch (error, stack) {
       AppLogger.error('Sign-in failed', error: error, stackTrace: stack);
       if (!mounted) return;

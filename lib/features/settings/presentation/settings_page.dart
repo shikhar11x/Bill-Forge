@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import 'package:billforge/app/config/env.dart';
+import 'package:billforge/app/router/app_routes.dart';
 import 'package:billforge/app/theme/app_spacing.dart';
 import 'package:billforge/app/theme/theme_providers.dart';
 import 'package:billforge/core/utils/formatters.dart';
@@ -11,13 +13,13 @@ import 'package:billforge/core/widgets/app_card.dart';
 import 'package:billforge/core/widgets/page_container.dart';
 import 'package:billforge/features/auth/application/auth_controller.dart';
 import 'package:billforge/features/auth/presentation/confirm_sign_out.dart';
+import 'package:billforge/features/shop/application/shop_providers.dart';
+import 'package:billforge/features/shop/presentation/widgets/shop_logo.dart';
 
 class SettingsPage extends ConsumerWidget {
   const SettingsPage({super.key});
 
   static const _upcoming = <(IconData, String)>[
-    (Icons.storefront_outlined, 'Shop profile'),
-    (Icons.receipt_long_outlined, 'Invoice & tax'),
     (Icons.payments_outlined, 'Payments'),
     (Icons.print_outlined, 'Printer'),
     (Icons.chat_outlined, 'WhatsApp'),
@@ -31,6 +33,7 @@ class SettingsPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final user = ref.watch(authControllerProvider).user;
+    final shop = shopOrNull(ref.watch(shopProfileProvider));
     final themeMode = ref.watch(themeModeProvider);
     final env = ref.watch(envProvider);
 
@@ -47,8 +50,9 @@ class SettingsPage extends ConsumerWidget {
                   children: [
                     CircleAvatar(
                       radius: 20,
-                      backgroundColor:
-                          theme.colorScheme.primary.withValues(alpha: 0.16),
+                      backgroundColor: theme.colorScheme.primary.withValues(
+                        alpha: 0.16,
+                      ),
                       child: Text(
                         initialsOf(user?.name ?? ''),
                         style: TextStyle(
@@ -62,7 +66,10 @@ class SettingsPage extends ConsumerWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(user?.name ?? '', style: theme.textTheme.titleSmall),
+                          Text(
+                            user?.name ?? '',
+                            style: theme.textTheme.titleSmall,
+                          ),
                           Text(
                             user?.email ?? '',
                             style: theme.textTheme.bodySmall?.copyWith(
@@ -83,17 +90,43 @@ class SettingsPage extends ConsumerWidget {
               ),
             ),
             _Section(
+              title: 'Shop',
+              child: AppCard(
+                padding: EdgeInsets.zero,
+                onTap: () => context.go(AppRoutes.shopEdit),
+                child: ListTile(
+                  leading: ShopLogo(shop: shop, size: 36),
+                  title: Text(shop?.name ?? 'Shop profile'),
+                  subtitle: const Text(
+                    'Business details, tax, branding and invoice settings',
+                  ),
+                  trailing: const Icon(Icons.chevron_right_rounded),
+                ),
+              ),
+            ),
+            _Section(
               title: 'Appearance',
               child: AppCard(
                 child: Row(
                   children: [
-                    Expanded(child: Text('Theme', style: theme.textTheme.bodyLarge)),
+                    Expanded(
+                      child: Text('Theme', style: theme.textTheme.bodyLarge),
+                    ),
                     SegmentedButton<ThemeMode>(
                       showSelectedIcon: false,
                       segments: const [
-                        ButtonSegment(value: ThemeMode.dark, label: Text('Dark')),
-                        ButtonSegment(value: ThemeMode.light, label: Text('Light')),
-                        ButtonSegment(value: ThemeMode.system, label: Text('System')),
+                        ButtonSegment(
+                          value: ThemeMode.dark,
+                          label: Text('Dark'),
+                        ),
+                        ButtonSegment(
+                          value: ThemeMode.light,
+                          label: Text('Light'),
+                        ),
+                        ButtonSegment(
+                          value: ThemeMode.system,
+                          label: Text('System'),
+                        ),
                       ],
                       selected: {themeMode},
                       onSelectionChanged: (s) =>
@@ -104,7 +137,7 @@ class SettingsPage extends ConsumerWidget {
               ),
             ),
             _Section(
-              title: 'Shop configuration',
+              title: 'Coming later',
               child: AppCard(
                 padding: EdgeInsets.zero,
                 child: Column(
@@ -129,9 +162,15 @@ class SettingsPage extends ConsumerWidget {
                   child: Row(
                     children: [
                       Expanded(
-                        child: Text('Environment', style: theme.textTheme.bodyLarge),
+                        child: Text(
+                          'Environment',
+                          style: theme.textTheme.bodyLarge,
+                        ),
                       ),
-                      AppBadge(label: env.environment.name, tone: BadgeTone.warning),
+                      AppBadge(
+                        label: env.environment.name,
+                        tone: BadgeTone.warning,
+                      ),
                     ],
                   ),
                 ),

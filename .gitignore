@@ -49,3 +49,7 @@ app.*.map.json
 
 # Local environment
 .env
+
+# Generated code
+*.g.dart
+*.freezed.dart

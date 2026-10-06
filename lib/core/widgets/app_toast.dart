@@ -12,8 +12,14 @@ abstract final class AppToast {
     ToastType type = ToastType.info,
   }) {
     final (icon, color) = switch (type) {
-      ToastType.info => (Icons.info_outline_rounded, Theme.of(context).colorScheme.primary),
-      ToastType.success => (Icons.check_circle_outline_rounded, AppColors.success),
+      ToastType.info => (
+        Icons.info_outline_rounded,
+        Theme.of(context).colorScheme.primary,
+      ),
+      ToastType.success => (
+        Icons.check_circle_outline_rounded,
+        AppColors.success,
+      ),
       ToastType.error => (Icons.error_outline_rounded, AppColors.danger),
     };
     ScaffoldMessenger.of(context)

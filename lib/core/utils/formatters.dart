@@ -22,10 +22,20 @@ String _groupIndian(String digits) {
   if (rest.isNotEmpty) groups.insert(0, rest);
   return '${groups.join(',')},$lastThree';
 }
+
 String initialsOf(String name) {
   final parts = name.trim().split(RegExp(r'\s+')).where((p) => p.isNotEmpty);
   if (parts.isEmpty) return '?';
   final first = parts.first[0];
   final last = parts.length > 1 ? parts.last[0] : '';
   return (first + last).toUpperCase();
+}
+
+/// Formats integer paise as Indian-grouped rupees: 123456789 -> ₹12,34,567.89
+String formatPaise(int paise, {bool showDecimals = true}) {
+  final negative = paise < 0;
+  final abs = paise.abs();
+  final rupees = _groupIndian((abs ~/ 100).toString());
+  final fraction = (abs % 100).toString().padLeft(2, '0');
+  return '${negative ? '-' : ''}₹$rupees${showDecimals ? '.$fraction' : ''}';
 }

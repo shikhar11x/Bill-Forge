@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:billforge/features/shop/application/shop_providers.dart';
+
+import '../support/fakes.dart';
 
 import 'package:billforge/app/app.dart';
 import 'package:billforge/app/config/env.dart';
@@ -11,8 +14,8 @@ import 'package:billforge/features/auth/domain/auth_state.dart';
 class _SignedInController extends AuthController {
   @override
   AuthState build() => const AuthState.authenticated(
-        AuthUser(name: 'Test Owner', email: 'owner@example.com'),
-      );
+    AuthUser(name: 'Test Owner', email: 'owner@example.com'),
+  );
 }
 
 void main() {
@@ -31,6 +34,7 @@ void main() {
             ),
           ),
           authControllerProvider.overrideWith(_SignedInController.new),
+          shopProfileProvider.overrideWith((ref) => Stream.value(sampleShop())),
         ],
         child: const BillForgeApp(),
       ),

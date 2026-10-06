@@ -6,7 +6,11 @@ import 'package:billforge/app/theme/app_spacing.dart';
 enum BadgeTone { neutral, accent, success, warning, danger }
 
 class AppBadge extends StatelessWidget {
-  const AppBadge({required this.label, this.tone = BadgeTone.neutral, super.key});
+  const AppBadge({
+    required this.label,
+    this.tone = BadgeTone.neutral,
+    super.key,
+  });
 
   final String label;
   final BadgeTone tone;
@@ -32,10 +36,8 @@ class AppBadge extends StatelessWidget {
       ),
       child: Text(
         label,
-        style: Theme.of(context).textTheme.labelSmall?.copyWith(
-              color: color,
-              fontWeight: FontWeight.w600,
-            ),
+        style: Theme.of(context).textTheme.labelSmall
+            ?.copyWith(color: color, fontWeight: FontWeight.w600),
       ),
     );
   }

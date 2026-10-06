@@ -4,11 +4,7 @@ import 'package:billforge/core/widgets/app_button.dart';
 import 'package:billforge/core/widgets/app_empty_state.dart';
 
 class AppErrorState extends StatelessWidget {
-  const AppErrorState({
-    required this.message,
-    this.onRetry,
-    super.key,
-  });
+  const AppErrorState({required this.message, this.onRetry, super.key});
 
   final String message;
   final VoidCallback? onRetry;

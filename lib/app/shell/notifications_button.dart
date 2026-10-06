@@ -8,8 +8,8 @@ class NotificationsButton extends StatelessWidget {
   const NotificationsButton({super.key});
 
   void _open(BuildContext context) {
-    final isMobile =
-        Breakpoints.fromWidth(MediaQuery.sizeOf(context).width).isMobile;
+    final isMobile = Breakpoints.fromWidth(MediaQuery.sizeOf(context).width)
+        .isMobile;
 
     if (isMobile) {
       showModalBottomSheet<void>(

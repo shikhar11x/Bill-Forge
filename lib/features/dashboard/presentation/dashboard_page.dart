@@ -98,7 +98,8 @@ class _Panels extends StatelessWidget {
       title: 'Sales overview',
       icon: Icons.show_chart_rounded,
       emptyTitle: 'No sales yet',
-      emptyMessage: 'Your sales trend will appear here once you create invoices.',
+      emptyMessage:
+          'Your sales trend will appear here once you create invoices.',
     );
     const recent = _Panel(
       title: 'Recent transactions',
@@ -120,7 +121,11 @@ class _Panels extends StatelessWidget {
           );
         }
         return const Column(
-          children: [sales, SizedBox(height: AppSpacing.lg), recent],
+          children: [
+            sales,
+            SizedBox(height: AppSpacing.lg),
+            recent,
+          ],
         );
       },
     );

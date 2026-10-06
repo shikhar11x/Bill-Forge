@@ -41,7 +41,9 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
     if (_loading || !_formKey.currentState!.validate()) return;
     setState(() => _loading = true);
     try {
-      await ref.read(authControllerProvider.notifier).signUp(
+      await ref
+          .read(authControllerProvider.notifier)
+          .signUp(
             name: _name.text,
             email: _email.text,
             password: _password.text,

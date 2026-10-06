@@ -30,8 +30,7 @@ class AppButton extends StatelessWidget {
         : scheme.onPrimary;
 
     // While loading we keep the normal look but ignore taps.
-    final VoidCallback? handler =
-        isLoading ? () {} : onPressed;
+    final VoidCallback? handler = isLoading ? () {} : onPressed;
 
     final content = Row(
       mainAxisSize: MainAxisSize.min,
@@ -50,15 +49,19 @@ class AppButton extends StatelessWidget {
     );
 
     final button = switch (variant) {
-      AppButtonVariant.primary =>
-        FilledButton(onPressed: handler, child: content),
-      AppButtonVariant.secondary =>
-        OutlinedButton(onPressed: handler, child: content),
+      AppButtonVariant.primary => FilledButton(
+        onPressed: handler,
+        child: content,
+      ),
+      AppButtonVariant.secondary => OutlinedButton(
+        onPressed: handler,
+        child: content,
+      ),
       AppButtonVariant.danger => FilledButton(
-          onPressed: handler,
-          style: FilledButton.styleFrom(backgroundColor: scheme.error),
-          child: content,
-        ),
+        onPressed: handler,
+        style: FilledButton.styleFrom(backgroundColor: scheme.error),
+        child: content,
+      ),
     };
 
     return expanded ? SizedBox(width: double.infinity, child: button) : button;

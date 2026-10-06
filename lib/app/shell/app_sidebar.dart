@@ -3,7 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:billforge/app/shell/shell_destinations.dart';
 import 'package:billforge/app/theme/app_spacing.dart';
 import 'package:billforge/core/constants/app_constants.dart';
-import 'package:billforge/core/widgets/brand_mark.dart';
+// import 'package:billforge/core/widgets/brand_mark.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import 'package:billforge/features/shop/application/shop_providers.dart';
+import 'package:billforge/features/shop/presentation/widgets/shop_logo.dart';
 
 class AppSidebar extends StatelessWidget {
   const AppSidebar({
@@ -18,11 +22,11 @@ class AppSidebar extends StatelessWidget {
   final ValueChanged<int> onSelected;
 
   Widget _item(int i) => _SidebarItem(
-        destination: shellDestinations[i],
-        selected: i == selectedIndex,
-        collapsed: collapsed,
-        onTap: () => onSelected(i),
-      );
+    destination: shellDestinations[i],
+    selected: i == selectedIndex,
+    collapsed: collapsed,
+    onTap: () => onSelected(i),
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +41,9 @@ class AppSidebar extends StatelessWidget {
     ];
 
     return Container(
-      width: collapsed ? AppLayout.sidebarCollapsedWidth : AppLayout.sidebarWidth,
+      width: collapsed
+          ? AppLayout.sidebarCollapsedWidth
+          : AppLayout.sidebarWidth,
       color: scheme.surface,
       child: SafeArea(
         child: Column(
@@ -63,27 +69,33 @@ class AppSidebar extends StatelessWidget {
   }
 }
 
-class _Brand extends StatelessWidget {
+class _Brand extends ConsumerWidget {
   const _Brand({required this.collapsed});
 
   final bool collapsed;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final shop = shopOrNull(ref.watch(shopProfileProvider));
     return SizedBox(
       height: 56,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
         child: Row(
-          mainAxisAlignment:
-              collapsed ? MainAxisAlignment.center : MainAxisAlignment.start,
+          mainAxisAlignment: collapsed
+              ? MainAxisAlignment.center
+              : MainAxisAlignment.start,
           children: [
-            const BrandMark(),
+            ShopLogo(shop: shop),
             if (!collapsed) ...[
               const SizedBox(width: AppSpacing.md),
-              Text(
-                AppConstants.appName,
-                style: Theme.of(context).textTheme.titleMedium,
+              Expanded(
+                child: Text(
+                  shop?.name ?? AppConstants.appName,
+                  style: Theme.of(context).textTheme.titleMedium,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
               ),
             ],
           ],
@@ -144,8 +156,9 @@ class _SidebarItem extends StatelessWidget {
                         destination.label,
                         style: TextStyle(
                           color: selected ? scheme.onSurface : color,
-                          fontWeight:
-                              selected ? FontWeight.w600 : FontWeight.w500,
+                          fontWeight: selected
+                              ? FontWeight.w600
+                              : FontWeight.w500,
                         ),
                       ),
                     ],

@@ -19,8 +19,9 @@ class PageContainer extends StatelessWidget {
           child: Align(
             alignment: Alignment.topCenter,
             child: ConstrainedBox(
-              constraints:
-                  const BoxConstraints(maxWidth: AppLayout.contentMaxWidth),
+              constraints: const BoxConstraints(
+                maxWidth: AppLayout.contentMaxWidth,
+              ),
               child: child,
             ),
           ),

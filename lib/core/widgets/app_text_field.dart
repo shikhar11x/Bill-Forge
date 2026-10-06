@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import 'package:billforge/app/theme/app_spacing.dart';
 
@@ -7,9 +8,13 @@ class AppTextField extends StatefulWidget {
     required this.label,
     required this.controller,
     this.hint,
+    this.helper,
     this.validator,
     this.keyboardType,
     this.textInputAction,
+    this.textCapitalization = TextCapitalization.none,
+    this.inputFormatters,
+    this.maxLines = 1,
     this.obscureText = false,
     this.prefixIcon,
     this.onSubmitted,
@@ -20,9 +25,13 @@ class AppTextField extends StatefulWidget {
   final String label;
   final TextEditingController controller;
   final String? hint;
+  final String? helper;
   final String? Function(String?)? validator;
   final TextInputType? keyboardType;
   final TextInputAction? textInputAction;
+  final TextCapitalization textCapitalization;
+  final List<TextInputFormatter>? inputFormatters;
+  final int maxLines;
   final bool obscureText;
   final IconData? prefixIcon;
   final ValueChanged<String>? onSubmitted;
@@ -53,11 +62,16 @@ class _AppTextFieldState extends State<AppTextField> {
           validator: widget.validator,
           enabled: widget.enabled,
           obscureText: _obscured,
+          maxLines: widget.obscureText ? 1 : widget.maxLines,
           keyboardType: widget.keyboardType,
           textInputAction: widget.textInputAction,
+          textCapitalization: widget.textCapitalization,
+          inputFormatters: widget.inputFormatters,
           onFieldSubmitted: widget.onSubmitted,
           decoration: InputDecoration(
             hintText: widget.hint,
+            helperText: widget.helper,
+            helperMaxLines: 2,
             prefixIcon: widget.prefixIcon == null
                 ? null
                 : Icon(widget.prefixIcon, size: 20),
