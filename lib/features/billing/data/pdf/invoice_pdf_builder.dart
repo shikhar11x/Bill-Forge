@@ -59,16 +59,15 @@ pw.Widget _text(
   bool bold = false,
   PdfColor? color,
   pw.TextAlign align = pw.TextAlign.left,
-}) =>
-    pw.Text(
-      value,
-      textAlign: align,
-      style: pw.TextStyle(
-        fontSize: size,
-        fontWeight: bold ? pw.FontWeight.bold : pw.FontWeight.normal,
-        color: color,
-      ),
-    );
+}) => pw.Text(
+  value,
+  textAlign: align,
+  style: pw.TextStyle(
+    fontSize: size,
+    fontWeight: bold ? pw.FontWeight.bold : pw.FontWeight.normal,
+    color: color,
+  ),
+);
 
 pw.Widget _kv(
   String label,
@@ -76,43 +75,39 @@ pw.Widget _kv(
   double size = 9,
   bool bold = false,
   PdfColor? color,
-}) =>
-    pw.Padding(
-      padding: const pw.EdgeInsets.symmetric(vertical: 1.5),
-      child: pw.Row(
-        mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
-        children: [
-          pw.Expanded(
-            child: _text(label, size: size, bold: bold, color: color),
-          ),
-          pw.SizedBox(width: 8),
-          _text(value, size: size, bold: bold, color: color),
-        ],
+}) => pw.Padding(
+  padding: const pw.EdgeInsets.symmetric(vertical: 1.5),
+  child: pw.Row(
+    mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+    children: [
+      pw.Expanded(
+        child: _text(label, size: size, bold: bold, color: color),
       ),
-    );
+      pw.SizedBox(width: 8),
+      _text(value, size: size, bold: bold, color: color),
+    ],
+  ),
+);
 
 List<TotalsRow> _totalsRows(Invoice invoice) => buildTotalsRows(
-      discountPaise: invoice.discountPaise,
-      taxablePaise: invoice.taxablePaise,
-      cgstPaise: invoice.cgstPaise,
-      sgstPaise: invoice.sgstPaise,
-      igstPaise: invoice.igstPaise,
-      roundOffPaise: invoice.roundOffPaise,
-    );
+  discountPaise: invoice.discountPaise,
+  taxablePaise: invoice.taxablePaise,
+  cgstPaise: invoice.cgstPaise,
+  sgstPaise: invoice.sgstPaise,
+  igstPaise: invoice.igstPaise,
+  roundOffPaise: invoice.roundOffPaise,
+);
 
 String _qty(InvoiceItem item) =>
     '${formatMilli(item.qtyMilli)} ${item.unit.symbol}';
 
 List<String> _contactLines(InvoiceDocument d) => [
-      if (d.shop.phone.isNotEmpty) 'Phone: ${d.shop.phone}',
-      if (d.shop.email != null) d.shop.email!,
-      if (d.shop.gstin != null) 'GSTIN: ${d.shop.gstin}',
-    ];
+  if (d.shop.phone.isNotEmpty) 'Phone: ${d.shop.phone}',
+  if (d.shop.email != null) d.shop.email!,
+  if (d.shop.gstin != null) 'GSTIN: ${d.shop.gstin}',
+];
 
-List<pw.Widget> _paymentLines(
-  InvoiceDocument d, {
-  double size = 9,
-}) {
+List<pw.Widget> _paymentLines(InvoiceDocument d, {double size = 9}) {
   final invoice = d.invoice;
   return [
     for (final p in d.payments)
@@ -350,9 +345,9 @@ pw.Widget _a4Items(InvoiceDocument d, InvoiceTemplateOptions o) {
   ];
 
   pw.Widget cellOf(pw.Alignment alignment, pw.Widget child) => pw.Padding(
-        padding: const pw.EdgeInsets.symmetric(horizontal: 4, vertical: 4),
-        child: pw.Align(alignment: alignment, child: child),
-      );
+    padding: const pw.EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+    child: pw.Align(alignment: alignment, child: child),
+  );
 
   return pw.Table(
     columnWidths: {
@@ -454,8 +449,7 @@ pw.Widget _a4TaxSummary(InvoiceDocument d) {
       pw.Padding(
         padding: const pw.EdgeInsets.symmetric(horizontal: 4, vertical: 3),
         child: pw.Align(
-          alignment:
-              right ? pw.Alignment.centerRight : pw.Alignment.centerLeft,
+          alignment: right ? pw.Alignment.centerRight : pw.Alignment.centerLeft,
           child: _text(value, size: 8.5, bold: bold),
         ),
       );
@@ -575,11 +569,8 @@ void _addReceipt(
         align: pw.TextAlign.center,
       );
 
-  pw.Widget rule() => pw.Divider(
-        thickness: 0.6,
-        height: 8,
-        color: PdfColors.black,
-      );
+  pw.Widget rule() =>
+      pw.Divider(thickness: 0.6, height: 8, color: PdfColors.black);
 
   final format = PdfPageFormat(
     o.paper.widthMm * PdfPageFormat.mm,
@@ -643,8 +634,7 @@ void _addReceipt(
               ),
             ),
           rule(),
-          for (final r in rows)
-            _kv(r.label, formatPaise(r.paise), size: size),
+          for (final r in rows) _kv(r.label, formatPaise(r.paise), size: size),
           _kv(
             'TOTAL',
             formatPaise(invoice.grandTotalPaise),
@@ -664,10 +654,7 @@ void _addReceipt(
           ],
           if (o.showAmountInWords) ...[
             rule(),
-            _text(
-              amountInWordsInr(invoice.grandTotalPaise),
-              size: size - 0.5,
-            ),
+            _text(amountInWordsInr(invoice.grandTotalPaise), size: size - 0.5),
           ],
           if (d.payments.isNotEmpty || invoice.duePaise > 0) ...[
             rule(),

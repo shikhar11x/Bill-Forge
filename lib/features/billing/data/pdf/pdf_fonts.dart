@@ -6,10 +6,8 @@ class PdfFonts {
 
   /// Helvetica ships inside the PDF library. It lacks the ₹ glyph, so it is
   /// for tests only.
-  factory PdfFonts.builtIn() => PdfFonts(
-        regular: pw.Font.helvetica(),
-        bold: pw.Font.helveticaBold(),
-      );
+  factory PdfFonts.builtIn() =>
+      PdfFonts(regular: pw.Font.helvetica(), bold: pw.Font.helveticaBold());
 
   final pw.Font regular;
   final pw.Font bold;
