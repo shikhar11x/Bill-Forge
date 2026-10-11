@@ -12,24 +12,23 @@ InvoiceItem item(
   int cgst = 250,
   int sgst = 250,
   int igst = 0,
-}) =>
-    InvoiceItem(
-      id: id,
-      invoiceId: 'i',
-      position: 0,
-      name: id,
-      hsnCode: hsn,
-      unit: ProductUnit.piece,
-      qtyMilli: 1000,
-      unitPricePaise: taxable,
-      gstRatePercent: rate,
-      discountPaise: 0,
-      taxablePaise: taxable,
-      cgstPaise: cgst,
-      sgstPaise: sgst,
-      igstPaise: igst,
-      totalPaise: taxable + cgst + sgst + igst,
-    );
+}) => InvoiceItem(
+  id: id,
+  invoiceId: 'i',
+  position: 0,
+  name: id,
+  hsnCode: hsn,
+  unit: ProductUnit.piece,
+  qtyMilli: 1000,
+  unitPricePaise: taxable,
+  gstRatePercent: rate,
+  discountPaise: 0,
+  taxablePaise: taxable,
+  cgstPaise: cgst,
+  sgstPaise: sgst,
+  igstPaise: igst,
+  totalPaise: taxable + cgst + sgst + igst,
+);
 
 void main() {
   test('groups by HSN and rate and sums amounts', () {
@@ -76,7 +75,8 @@ void main() {
       item('b', hsn: '2', rate: 12, taxable: 6789),
       item('c', hsn: '1', taxable: 1111),
     ];
-    final total = buildTaxSummary(items).fold<int>(0, (s, r) => s + r.taxablePaise);
+    final total = buildTaxSummary(items)
+        .fold<int>(0, (s, r) => s + r.taxablePaise);
     expect(total, 12345 + 6789 + 1111);
   });
 }

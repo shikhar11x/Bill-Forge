@@ -34,10 +34,7 @@ void main() {
 
   test('paise', () {
     expect(amountInWordsInr(50), 'Fifty Paise Only');
-    expect(
-      amountInWordsInr(10050),
-      'Rupees One Hundred and Fifty Paise Only',
-    );
+    expect(amountInWordsInr(10050), 'Rupees One Hundred and Fifty Paise Only');
     expect(amountInWordsInr(105), 'Rupees One and Five Paise Only');
   });
 }

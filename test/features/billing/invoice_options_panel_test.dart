@@ -42,11 +42,17 @@ void main() {
     await pumpPanel(tester);
     await tester.tap(find.text('80 mm'));
     await tester.pumpAndSettle();
-    expect(container.read(invoiceTemplateProvider).paper, InvoicePaper.thermal80);
+    expect(
+      container.read(invoiceTemplateProvider).paper,
+      InvoicePaper.thermal80,
+    );
 
     await tester.tap(find.text('58 mm'));
     await tester.pumpAndSettle();
-    expect(container.read(invoiceTemplateProvider).paper, InvoicePaper.thermal58);
+    expect(
+      container.read(invoiceTemplateProvider).paper,
+      InvoicePaper.thermal58,
+    );
   });
 
   testWidgets('toggles update the options', (tester) async {

@@ -15,6 +15,7 @@ import 'package:billforge/features/billing/domain/shop_tax_context.dart';
 import 'package:billforge/features/products/domain/product_unit.dart';
 import 'package:billforge/features/shop/domain/gst_registration.dart';
 import 'package:billforge/features/shop/domain/shop_profile.dart';
+
 import '../../support/customer_fakes.dart';
 import '../../support/fakes.dart';
 
@@ -160,7 +161,9 @@ void main() {
   });
 
   test('an unreadable or unsupported logo is skipped, not fatal', () async {
-    final shop = regularShop.copyWith(logo: Uint8List.fromList([1, 2, 3, 4, 5]));
+    final shop = regularShop.copyWith(
+      logo: Uint8List.fromList([1, 2, 3, 4, 5]),
+    );
     final bytes = await buildInvoicePdf(
       document: makeDocument(shop: shop),
       options: const InvoiceTemplateOptions(),
