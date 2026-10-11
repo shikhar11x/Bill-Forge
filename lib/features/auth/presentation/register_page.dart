@@ -120,8 +120,9 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
           ],
         ),
       ),
-      footer: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
+      footer: Wrap(
+        alignment: WrapAlignment.center,
+        crossAxisAlignment: WrapCrossAlignment.center,
         children: [
           const Text('Already have an account?'),
           TextButton(

@@ -93,8 +93,9 @@ class _LoginPageState extends ConsumerState<LoginPage> {
           ],
         ),
       ),
-      footer: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
+      footer: Wrap(
+        alignment: WrapAlignment.center,
+        crossAxisAlignment: WrapCrossAlignment.center,
         children: [
           const Text('New to BillForge?'),
           TextButton(
