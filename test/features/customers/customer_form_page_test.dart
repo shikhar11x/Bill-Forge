@@ -44,10 +44,18 @@ void main() {
     await tester.pumpAndSettle();
   }
 
+  /// The save button sits below the fold, so scroll to it first.
+  Future<void> tapSave(WidgetTester tester) async {
+    final button = find.text('Add customer');
+    await tester.ensureVisible(button);
+    await tester.pumpAndSettle();
+    await tester.tap(button);
+    await tester.pumpAndSettle();
+  }
+
   testWidgets('name is required', (tester) async {
     await pumpForm(tester);
-    await tester.tap(find.text('Add customer'));
-    await tester.pumpAndSettle();
+    await tapSave(tester);
 
     expect(find.text('Customer name is required'), findsOneWidget);
     expect(repo.saved, isNull);
@@ -57,8 +65,7 @@ void main() {
     await pumpForm(tester);
     await tester.enterText(find.byType(TextFormField).at(0), 'Rahul');
     await tester.enterText(find.byType(TextFormField).at(1), '12345');
-    await tester.tap(find.text('Add customer'));
-    await tester.pumpAndSettle();
+    await tapSave(tester);
 
     expect(find.text('Enter a valid 10-digit mobile number'), findsOneWidget);
     expect(repo.saved, isNull);
@@ -68,8 +75,7 @@ void main() {
     await pumpForm(tester);
     await tester.enterText(find.byType(TextFormField).at(0), 'Rahul Sharma');
     await tester.enterText(find.byType(TextFormField).at(1), '98765 43210');
-    await tester.tap(find.text('Add customer'));
-    await tester.pumpAndSettle();
+    await tapSave(tester);
 
     expect(repo.saved?.name, 'Rahul Sharma');
     expect(repo.saved?.phone, '9876543210');

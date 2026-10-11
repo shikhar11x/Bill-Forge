@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:billforge/app/app.dart';
 import 'package:billforge/app/config/env.dart';
 import 'package:billforge/core/widgets/app_button.dart';
+import 'package:billforge/features/shop/application/shop_providers.dart';
 
 void main() {
   testWidgets('splash -> login -> validation -> shop onboarding', (
@@ -23,6 +24,7 @@ void main() {
               apiBaseUrl: 'http://localhost:3000',
             ),
           ),
+          shopProfileProvider.overrideWith((ref) => Stream.value(null)),
         ],
         child: const BillForgeApp(),
       ),
@@ -30,7 +32,7 @@ void main() {
 
     // Splash resolves to the login page.
     await tester.pump(const Duration(seconds: 2));
-    await tester.pumpAndSettle();
+    await tester.pump(const Duration(milliseconds: 500));
 
     expect(find.byType(AppButton), findsOneWidget);
 
@@ -47,7 +49,8 @@ void main() {
 
     await tester.tap(find.byType(AppButton));
     await tester.pump(const Duration(seconds: 1));
-    await tester.pumpAndSettle();
+    await tester.pump(const Duration(milliseconds: 500));
+    await tester.pump(const Duration(milliseconds: 500));
 
     expect(find.text('Set up your shop'), findsOneWidget);
   });

@@ -29,7 +29,8 @@ void main() {
   });
 
   test('very large amounts keep stacking crores', () {
-    expect(amountInWordsInr(100000000000), 'Rupees One Thousand Crore Only');
+    expect(amountInWordsInr(100000000000), 'Rupees One Hundred Crore Only');
+    expect(amountInWordsInr(1000000000000), 'Rupees One Thousand Crore Only');
   });
 
   test('paise', () {

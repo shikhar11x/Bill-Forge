@@ -159,7 +159,9 @@ void main() {
       ]);
       expect(t.taxablePaise, 9000);
       expect(t.taxPaise, 1620);
-      expect(t.grandTotalPaise, 10620);
+      expect(t.subtotalPaise, 10620);
+      expect(t.roundOffPaise, -20);
+      expect(t.grandTotalPaise, 10600);
     });
 
     test('bill discount is shared in proportion and sums exactly', () {

@@ -1,6 +1,8 @@
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:pdf/widgets.dart' as pw;
 
 import 'package:billforge/features/billing/data/pdf/invoice_pdf_builder.dart';
 import 'package:billforge/features/billing/data/pdf/pdf_fonts.dart';
@@ -18,6 +20,15 @@ import 'package:billforge/features/shop/domain/shop_profile.dart';
 
 import '../../support/customer_fakes.dart';
 import '../../support/fakes.dart';
+
+PdfFonts loadTestFonts() {
+  pw.Font load(String path) =>
+      pw.Font.ttf(ByteData.sublistView(File(path).readAsBytesSync()));
+  return PdfFonts(
+    regular: load('assets/fonts/Inter-Regular.ttf'),
+    bold: load('assets/fonts/Inter-Bold.ttf'),
+  );
+}
 
 InvoiceDocument makeDocument({
   required ShopProfile shop,
@@ -84,7 +95,7 @@ InvoiceDocument makeDocument({
 }
 
 void main() {
-  final fonts = PdfFonts.builtIn();
+  final fonts = loadTestFonts();
 
   final regularShop = sampleShop().copyWith(
     gstRegistration: GstRegistration.regular,

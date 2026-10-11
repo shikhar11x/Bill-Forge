@@ -74,7 +74,10 @@ void main() {
     // Step 4: defaults are valid
     expect(find.text('Example: INV-0001'), findsOneWidget);
     await tester.tap(find.text('Create shop'));
-    await tester.pumpAndSettle();
+    // In the real app the router leaves this page after saving. Here there is
+    // no router, so the button spinner keeps animating: pump, don't settle.
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 50));
 
     expect(repo.saved?.name, 'Test Store');
     expect(repo.saved?.state, 'Andaman and Nicobar Islands');

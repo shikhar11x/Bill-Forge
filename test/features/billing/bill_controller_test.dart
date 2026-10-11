@@ -23,6 +23,9 @@ void main() {
         shopProfileProvider.overrideWith((ref) => Stream.value(shop)),
       ],
     );
+    // Riverpod 3 pauses providers nobody listens to, so the shop stream would
+    // never emit. Keep it alive for the whole test.
+    container.listen(shopProfileProvider, (_, _) {});
     addTearDown(container.dispose);
     return container;
   }
