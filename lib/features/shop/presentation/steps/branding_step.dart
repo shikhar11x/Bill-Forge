@@ -177,7 +177,7 @@ class _LogoPicker extends StatelessWidget {
                   ),
                   const SizedBox(height: AppSpacing.xs),
                   Text(
-                    'PNG, JPG or WebP, up to 512 KB.',
+                    'PNG or JPG, up to 512 KB.',
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: scheme.onSurfaceVariant,
                     ),

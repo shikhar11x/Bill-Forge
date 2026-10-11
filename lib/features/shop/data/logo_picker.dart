@@ -24,7 +24,7 @@ abstract final class LogoPicker {
     try {
       final result = await FilePicker.platform.pickFiles(
         type: FileType.custom,
-        allowedExtensions: const ['png', 'jpg', 'jpeg', 'webp'],
+        allowedExtensions: const ['png', 'jpg', 'jpeg'],
         withData: true,
       );
       if (result == null || result.files.isEmpty) {
