@@ -18,14 +18,13 @@ class InvoiceOptionsPanel extends ConsumerWidget {
       String label,
       bool value,
       InvoiceTemplateOptions Function(bool v) apply,
-    ) =>
-        SwitchListTile(
-          dense: true,
-          contentPadding: EdgeInsets.zero,
-          title: Text(label),
-          value: value,
-          onChanged: (v) => notifier.update(apply(v)),
-        );
+    ) => SwitchListTile(
+      dense: true,
+      contentPadding: EdgeInsets.zero,
+      title: Text(label),
+      value: value,
+      onChanged: (v) => notifier.update(apply(v)),
+    );
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -44,20 +43,41 @@ class InvoiceOptionsPanel extends ConsumerWidget {
         ),
         const SizedBox(height: AppSpacing.lg),
         Text('Show on invoice', style: theme.textTheme.titleSmall),
-        toggle('Shop logo', options.showLogo,
-            (v) => options.copyWith(showLogo: v)),
-        toggle('HSN/SAC codes', options.showHsn,
-            (v) => options.copyWith(showHsn: v)),
-        toggle('Tax summary', options.showTaxSummary,
-            (v) => options.copyWith(showTaxSummary: v)),
-        toggle('Amount in words', options.showAmountInWords,
-            (v) => options.copyWith(showAmountInWords: v)),
-        toggle('Payment details', options.showPaymentInstructions,
-            (v) => options.copyWith(showPaymentInstructions: v)),
-        toggle('Footer note', options.showFooter,
-            (v) => options.copyWith(showFooter: v)),
-        toggle('Signature block (A4)', options.showSignature,
-            (v) => options.copyWith(showSignature: v)),
+        toggle(
+          'Shop logo',
+          options.showLogo,
+          (v) => options.copyWith(showLogo: v),
+        ),
+        toggle(
+          'HSN/SAC codes',
+          options.showHsn,
+          (v) => options.copyWith(showHsn: v),
+        ),
+        toggle(
+          'Tax summary',
+          options.showTaxSummary,
+          (v) => options.copyWith(showTaxSummary: v),
+        ),
+        toggle(
+          'Amount in words',
+          options.showAmountInWords,
+          (v) => options.copyWith(showAmountInWords: v),
+        ),
+        toggle(
+          'Payment details',
+          options.showPaymentInstructions,
+          (v) => options.copyWith(showPaymentInstructions: v),
+        ),
+        toggle(
+          'Footer note',
+          options.showFooter,
+          (v) => options.copyWith(showFooter: v),
+        ),
+        toggle(
+          'Signature block (A4)',
+          options.showSignature,
+          (v) => options.copyWith(showSignature: v),
+        ),
         const SizedBox(height: AppSpacing.sm),
         Text(
           'Choices apply until you close the app. Receipts print through your '

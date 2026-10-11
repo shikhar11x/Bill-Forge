@@ -113,6 +113,15 @@ class _DetailView extends ConsumerWidget {
                   ),
                 ),
                 InvoiceStatusBadge(invoice: invoice),
+                if (!invoice.isDraft) ...[
+                  const SizedBox(width: AppSpacing.md),
+                  AppButton(
+                    label: 'Print / PDF',
+                    icon: Icons.print_outlined,
+                    onPressed: () =>
+                        context.go(AppRoutes.invoicePreview(invoice.id)),
+                  ),
+                ],
               ],
             ),
             AppCard(

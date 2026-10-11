@@ -29,7 +29,9 @@ class InvoicePreviewPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return ref.watch(invoiceDetailProvider(invoiceId)).when(
+    return ref
+        .watch(invoiceDetailProvider(invoiceId))
+        .when(
           loading: () =>
               const Center(child: CircularProgressIndicator(strokeWidth: 2)),
           error: (error, stack) => AppErrorState(
@@ -90,11 +92,8 @@ class _PreviewBody extends ConsumerWidget {
     final preview = PdfPreview(
       // A new key rebuilds the preview whenever the layout choices change.
       key: ValueKey((options, shop.updatedAt)),
-      build: (format) => buildInvoicePdf(
-        document: document,
-        options: options,
-        fonts: fonts,
-      ),
+      build: (format) =>
+          buildInvoicePdf(document: document, options: options, fonts: fonts),
       pdfFileName: fileName,
       canChangePageFormat: false,
       canChangeOrientation: false,
@@ -150,10 +149,10 @@ class _PreviewBody extends ConsumerWidget {
                 children: [
                   Expanded(child: preview),
                   const SizedBox(width: AppSpacing.lg),
-                  SizedBox(
+                  const SizedBox(
                     width: 300,
                     child: AppCard(
-                      child: const SingleChildScrollView(
+                      child: SingleChildScrollView(
                         child: InvoiceOptionsPanel(),
                       ),
                     ),
@@ -162,7 +161,9 @@ class _PreviewBody extends ConsumerWidget {
               );
 
         return Padding(
-          padding: EdgeInsets.all(size.isMobile ? AppSpacing.lg : AppSpacing.xl),
+          padding: EdgeInsets.all(
+            size.isMobile ? AppSpacing.lg : AppSpacing.xl,
+          ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
