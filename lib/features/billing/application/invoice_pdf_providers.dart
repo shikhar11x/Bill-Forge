@@ -16,5 +16,5 @@ class InvoiceTemplateNotifier extends Notifier<InvoiceTemplateOptions> {
 
 final invoiceTemplateProvider =
     NotifierProvider<InvoiceTemplateNotifier, InvoiceTemplateOptions>(
-  InvoiceTemplateNotifier.new,
-);
+      InvoiceTemplateNotifier.new,
+    );
