@@ -16,10 +16,10 @@ class InvoiceDocument {
   bool get chargesTax => shop.gstRegistration.chargesTax;
 
   String get title => switch (shop.gstRegistration) {
-        GstRegistration.regular => 'Tax Invoice',
-        GstRegistration.composition => 'Bill of Supply',
-        GstRegistration.unregistered => 'Invoice',
-      };
+    GstRegistration.regular => 'Tax Invoice',
+    GstRegistration.composition => 'Bill of Supply',
+    GstRegistration.unregistered => 'Invoice',
+  };
 
   String? get declaration => shop.gstRegistration == GstRegistration.composition
       ? 'Composition taxable person, not eligible to collect tax on supplies.'
@@ -28,8 +28,8 @@ class InvoiceDocument {
   DateTime get date => invoice.issuedAt ?? invoice.updatedAt;
 
   List<String> get sellerAddressLines => [
-        shop.addressLine1,
-        if (shop.addressLine2 != null) shop.addressLine2!,
-        '${shop.city}, ${shop.state} - ${shop.pincode}',
-      ];
+    shop.addressLine1,
+    if (shop.addressLine2 != null) shop.addressLine2!,
+    '${shop.city}, ${shop.state} - ${shop.pincode}',
+  ];
 }

@@ -34,19 +34,20 @@ List<TaxSummaryRow> buildTaxSummary(List<InvoiceItem> items) {
   int sum(List<InvoiceItem> list, int Function(InvoiceItem i) pick) =>
       list.fold<int>(0, (total, i) => total + pick(i));
 
-  final rows = [
-    for (final group in groups.values)
-      TaxSummaryRow(
-        hsnCode: group.first.hsnCode ?? '',
-        ratePercent: group.first.gstRatePercent,
-        taxablePaise: sum(group, (i) => i.taxablePaise),
-        cgstPaise: sum(group, (i) => i.cgstPaise),
-        sgstPaise: sum(group, (i) => i.sgstPaise),
-        igstPaise: sum(group, (i) => i.igstPaise),
-      ),
-  ]..sort((a, b) {
-      final byHsn = a.hsnCode.compareTo(b.hsnCode);
-      return byHsn != 0 ? byHsn : a.ratePercent.compareTo(b.ratePercent);
-    });
+  final rows =
+      [
+        for (final group in groups.values)
+          TaxSummaryRow(
+            hsnCode: group.first.hsnCode ?? '',
+            ratePercent: group.first.gstRatePercent,
+            taxablePaise: sum(group, (i) => i.taxablePaise),
+            cgstPaise: sum(group, (i) => i.cgstPaise),
+            sgstPaise: sum(group, (i) => i.sgstPaise),
+            igstPaise: sum(group, (i) => i.igstPaise),
+          ),
+      ]..sort((a, b) {
+        final byHsn = a.hsnCode.compareTo(b.hsnCode);
+        return byHsn != 0 ? byHsn : a.ratePercent.compareTo(b.ratePercent);
+      });
   return rows;
 }
