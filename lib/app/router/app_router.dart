@@ -13,6 +13,7 @@ import 'package:billforge/features/auth/presentation/register_page.dart';
 import 'package:billforge/features/auth/presentation/splash_page.dart';
 import 'package:billforge/features/billing/presentation/billing_page.dart';
 import 'package:billforge/features/billing/presentation/invoice_detail_page.dart';
+import 'package:billforge/features/billing/presentation/invoice_preview_page.dart';
 import 'package:billforge/features/billing/presentation/pos_page.dart';
 import 'package:billforge/features/customers/presentation/customer_form_page.dart';
 import 'package:billforge/features/customers/presentation/customers_page.dart';
@@ -127,6 +128,18 @@ final routerProvider = Provider<GoRouter>((ref) {
                     InvoiceDetailPage(key: ValueKey(id), invoiceId: id),
                   );
                 },
+                routes: [
+                  GoRoute(
+                    path: 'preview',
+                    pageBuilder: (context, state) {
+                      final id = state.pathParameters['id']!;
+                      return _noTransition(
+                        state,
+                        InvoicePreviewPage(key: ValueKey(id), invoiceId: id),
+                      );
+                    },
+                  ),
+                ],
               ),
             ],
           ),
