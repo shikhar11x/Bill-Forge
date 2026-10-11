@@ -19,8 +19,11 @@ import 'package:billforge/features/billing/application/bill_controller.dart';
 import 'package:billforge/features/billing/application/billing_providers.dart';
 import 'package:billforge/features/billing/domain/discount.dart';
 import 'package:billforge/features/billing/domain/invoice.dart';
+import 'package:billforge/features/billing/domain/invoice_document.dart';
 import 'package:billforge/features/billing/presentation/widgets/invoice_list_items.dart';
+import 'package:billforge/features/billing/presentation/widgets/share_invoice_dialog.dart';
 import 'package:billforge/features/billing/presentation/widgets/totals_block.dart';
+import 'package:billforge/features/shop/application/shop_providers.dart';
 
 class InvoiceDetailPage extends ConsumerWidget {
   const InvoiceDetailPage({required this.invoiceId, super.key});
@@ -29,9 +32,7 @@ class InvoiceDetailPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return ref
-        .watch(invoiceDetailProvider(invoiceId))
-        .when(
+    return ref.watch(invoiceDetailProvider(invoiceId)).when(
           loading: () =>
               const Center(child: CircularProgressIndicator(strokeWidth: 2)),
           error: (error, stack) => AppErrorState(
@@ -79,6 +80,16 @@ class _DetailView extends ConsumerWidget {
     final theme = Theme.of(context);
     final muted = theme.colorScheme.onSurfaceVariant;
     final invoice = detail.invoice;
+    final shop = shopOrNull(ref.watch(shopProfileProvider));
+    final compact = MediaQuery.sizeOf(context).width < 600;
+
+    void openPrint() => context.go(AppRoutes.invoicePreview(invoice.id));
+    VoidCallback? openShare = shop == null
+        ? null
+        : () => ShareInvoiceDialog.show(
+              context,
+              InvoiceDocument(shop: shop, detail: detail),
+            );
 
     final rows = buildTotalsRows(
       discountPaise: invoice.discountPaise,
@@ -114,13 +125,32 @@ class _DetailView extends ConsumerWidget {
                 ),
                 InvoiceStatusBadge(invoice: invoice),
                 if (!invoice.isDraft) ...[
-                  const SizedBox(width: AppSpacing.md),
-                  AppButton(
-                    label: 'Print / PDF',
-                    icon: Icons.print_outlined,
-                    onPressed: () =>
-                        context.go(AppRoutes.invoicePreview(invoice.id)),
-                  ),
+                  const SizedBox(width: AppSpacing.sm),
+                  if (compact) ...[
+                    IconButton(
+                      tooltip: 'Share',
+                      icon: const Icon(Icons.share_outlined),
+                      onPressed: openShare,
+                    ),
+                    IconButton(
+                      tooltip: 'Print / PDF',
+                      icon: const Icon(Icons.print_outlined),
+                      onPressed: openPrint,
+                    ),
+                  ] else ...[
+                    AppButton(
+                      label: 'Share',
+                      icon: Icons.share_outlined,
+                      variant: AppButtonVariant.secondary,
+                      onPressed: openShare,
+                    ),
+                    const SizedBox(width: AppSpacing.sm),
+                    AppButton(
+                      label: 'Print / PDF',
+                      icon: Icons.print_outlined,
+                      onPressed: openPrint,
+                    ),
+                  ],
                 ],
               ],
             ),
