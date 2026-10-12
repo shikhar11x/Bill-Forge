@@ -56,14 +56,12 @@ class _ShareInvoiceDialogState extends ConsumerState<ShareInvoiceDialog> {
     setState(() => _problem = null);
     // The launch starts before any await: browsers block pop-ups that are
     // opened after an async gap.
-    final opened = await ref.read(invoiceShareServiceProvider).openChat(
-          phone: _phoneOrNull,
-          message: _message.text.trim(),
-        );
+    final opened = await ref
+        .read(invoiceShareServiceProvider)
+        .openChat(phone: _phoneOrNull, message: _message.text.trim());
     if (!mounted || opened) return;
     setState(() {
-      _problem =
-          'Could not open WhatsApp. Check that it is installed, or use Share PDF.';
+      _problem = 'Could not open WhatsApp. Check that it is installed, or use Share PDF.';
     });
   }
 
@@ -83,7 +81,9 @@ class _ShareInvoiceDialogState extends ConsumerState<ShareInvoiceDialog> {
         fonts: fonts,
       );
       final number = widget.document.invoice.invoiceNumber ?? 'invoice';
-      await ref.read(invoiceShareServiceProvider).sharePdf(
+      await ref
+          .read(invoiceShareServiceProvider)
+          .sharePdf(
             bytes: bytes,
             fileName: '$number.pdf',
             message: _message.text.trim(),
@@ -168,7 +168,9 @@ class _ShareInvoiceDialogState extends ConsumerState<ShareInvoiceDialog> {
                         'to send the PDF: on Android pick WhatsApp from the '
                         'share menu; on web and Windows the PDF is saved so '
                         'you can attach it in WhatsApp.',
-                        style: theme.textTheme.bodySmall?.copyWith(color: muted),
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: muted,
+                        ),
                       ),
                       if (_problem != null)
                         Text(

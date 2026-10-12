@@ -18,7 +18,11 @@ class WhatsAppShareService implements InvoiceShareService {
         mode: LaunchMode.externalApplication,
       );
     } catch (error, stack) {
-      AppLogger.error('Opening WhatsApp failed', error: error, stackTrace: stack);
+      AppLogger.error(
+        'Opening WhatsApp failed',
+        error: error,
+        stackTrace: stack,
+      );
       return false;
     }
   }

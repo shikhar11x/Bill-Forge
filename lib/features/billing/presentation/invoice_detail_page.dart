@@ -32,7 +32,9 @@ class InvoiceDetailPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return ref.watch(invoiceDetailProvider(invoiceId)).when(
+    return ref
+        .watch(invoiceDetailProvider(invoiceId))
+        .when(
           loading: () =>
               const Center(child: CircularProgressIndicator(strokeWidth: 2)),
           error: (error, stack) => AppErrorState(
@@ -87,9 +89,9 @@ class _DetailView extends ConsumerWidget {
     VoidCallback? openShare = shop == null
         ? null
         : () => ShareInvoiceDialog.show(
-              context,
-              InvoiceDocument(shop: shop, detail: detail),
-            );
+            context,
+            InvoiceDocument(shop: shop, detail: detail),
+          );
 
     final rows = buildTotalsRows(
       discountPaise: invoice.discountPaise,
