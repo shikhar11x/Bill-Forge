@@ -24,14 +24,14 @@ class DriftStockRepository implements StockRepository {
         (t) => OrderingTerm.desc(t.createdAt),
         // Dates have one-second resolution, so break ties by insert order.
         (t) => OrderingTerm(
-              expression: const CustomExpression<int>('rowid'),
-              mode: OrderingMode.desc,
-            ),
+          expression: const CustomExpression<int>('rowid'),
+          mode: OrderingMode.desc,
+        ),
       ])
       ..limit(limit);
-    return select
-        .watch()
-        .map((rows) => rows.map(movementFromRow).toList(growable: false));
+    return select.watch().map(
+      (rows) => rows.map(movementFromRow).toList(growable: false),
+    );
   }
 
   @override
@@ -42,9 +42,9 @@ class DriftStockRepository implements StockRepository {
     String? note,
   }) {
     return _db.transaction(() async {
-      final product = await (_db.select(_db.products)
-            ..where((t) => t.id.equals(productId)))
-          .getSingleOrNull();
+      final product = await (_db.select(
+        _db.products,
+      )..where((t) => t.id.equals(productId))).getSingleOrNull();
       if (product == null) {
         throw const ConflictFailure('That product no longer exists.');
       }

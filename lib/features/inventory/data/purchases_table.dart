@@ -8,8 +8,7 @@ import 'package:billforge/features/products/data/products_table.dart';
 @TableIndex(name: 'purchases_supplier_idx', columns: {#supplierId})
 class Purchases extends Table {
   TextColumn get id => text()();
-  TextColumn get supplierId =>
-      text().nullable().references(Suppliers, #id)();
+  TextColumn get supplierId => text().nullable().references(Suppliers, #id)();
   TextColumn get supplierName => text().nullable()();
   TextColumn get billNumber => text().nullable()();
   DateTimeColumn get purchasedAt => dateTime()();

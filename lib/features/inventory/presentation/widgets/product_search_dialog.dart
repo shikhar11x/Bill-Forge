@@ -15,9 +15,9 @@ class ProductSearchDialog extends ConsumerStatefulWidget {
   const ProductSearchDialog({super.key});
 
   static Future<Product?> show(BuildContext context) => showDialog<Product>(
-        context: context,
-        builder: (_) => const ProductSearchDialog(),
-      );
+    context: context,
+    builder: (_) => const ProductSearchDialog(),
+  );
 
   @override
   ConsumerState<ProductSearchDialog> createState() =>
@@ -56,7 +56,10 @@ class _ProductSearchDialogState extends ConsumerState<ProductSearchDialog> {
               child: Row(
                 children: [
                   Expanded(
-                    child: Text('Select product', style: theme.textTheme.titleMedium),
+                    child: Text(
+                      'Select product',
+                      style: theme.textTheme.titleMedium,
+                    ),
                   ),
                   IconButton(
                     tooltip: 'Close',

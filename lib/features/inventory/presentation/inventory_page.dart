@@ -26,8 +26,9 @@ class _InventoryPageState extends State<InventoryPage> {
         return Align(
           alignment: Alignment.topCenter,
           child: ConstrainedBox(
-            constraints:
-                const BoxConstraints(maxWidth: AppLayout.contentMaxWidth),
+            constraints: const BoxConstraints(
+              maxWidth: AppLayout.contentMaxWidth,
+            ),
             child: Padding(
               padding: EdgeInsets.all(wide ? AppSpacing.xxl : AppSpacing.lg),
               child: Column(

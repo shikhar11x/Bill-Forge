@@ -9,8 +9,8 @@ import 'package:billforge/features/products/domain/product.dart';
 
 class PurchaseLineEditor {
   PurchaseLineEditor(this.product, {String qty = '1', String cost = ''})
-      : qty = TextEditingController(text: qty),
-        cost = TextEditingController(text: cost);
+    : qty = TextEditingController(text: qty),
+      cost = TextEditingController(text: cost);
 
   final Product product;
   final TextEditingController qty;
@@ -76,9 +76,9 @@ class PurchaseFormState extends ChangeNotifier {
 
   /// Rebuilds whoever depends on a typed quantity or cost.
   Listenable get fieldsListenable => Listenable.merge([
-        this,
-        for (final l in lines) ...[l.qty, l.cost],
-      ]);
+    this,
+    for (final l in lines) ...[l.qty, l.cost],
+  ]);
 
   int get totalPaise => lines.fold<int>(0, (s, l) => s + (l.totalPaise ?? 0));
 

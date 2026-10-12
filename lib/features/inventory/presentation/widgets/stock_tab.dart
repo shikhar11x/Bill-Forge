@@ -82,21 +82,21 @@ class _StockTabState extends ConsumerState<StockTab> {
   }
 
   Widget _menu(Product product) => PopupMenuButton<_StockAction>(
-        tooltip: 'Stock actions',
-        icon: const Icon(Icons.more_vert_rounded),
-        onSelected: (a) => _onAction(product, a),
-        itemBuilder: (context) => [
-          PopupMenuItem(
-            value: _StockAction.adjust,
-            enabled: product.trackStock,
-            child: const Text('Adjust stock'),
-          ),
-          const PopupMenuItem(
-            value: _StockAction.history,
-            child: Text('Stock history'),
-          ),
-        ],
-      );
+    tooltip: 'Stock actions',
+    icon: const Icon(Icons.more_vert_rounded),
+    onSelected: (a) => _onAction(product, a),
+    itemBuilder: (context) => [
+      PopupMenuItem(
+        value: _StockAction.adjust,
+        enabled: product.trackStock,
+        child: const Text('Adjust stock'),
+      ),
+      const PopupMenuItem(
+        value: _StockAction.history,
+        child: Text('Stock history'),
+      ),
+    ],
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -254,7 +254,9 @@ class _StockTabState extends ConsumerState<StockTab> {
                       if (p.sku != null)
                         Text(
                           p.sku!,
-                          style: theme.textTheme.bodySmall?.copyWith(color: muted),
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: muted,
+                          ),
                         ),
                       const SizedBox(height: AppSpacing.sm),
                       StockLabel(product: p),

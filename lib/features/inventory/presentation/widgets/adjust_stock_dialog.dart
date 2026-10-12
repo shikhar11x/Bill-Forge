@@ -50,11 +50,11 @@ class _AdjustStockDialogState extends ConsumerState<AdjustStockDialog> {
   }
 
   String? _validateQty(String? value) => validateAdjustment(
-        mode: _mode,
-        currentMilli: _product.stockMilli,
-        text: value ?? '',
-        fractional: _product.unit.fractional,
-      );
+    mode: _mode,
+    currentMilli: _product.stockMilli,
+    text: value ?? '',
+    fractional: _product.unit.fractional,
+  );
 
   Future<void> _submit() async {
     if (_saving || !(_formKey.currentState?.validate() ?? false)) return;
@@ -71,7 +71,9 @@ class _AdjustStockDialogState extends ConsumerState<AdjustStockDialog> {
     });
     try {
       final note = _note.text.trim();
-      await ref.read(stockRepositoryProvider).adjust(
+      await ref
+          .read(stockRepositoryProvider)
+          .adjust(
             productId: _product.id,
             deltaMilli: adjustment.deltaMilli,
             reason: _reason,
@@ -85,7 +87,11 @@ class _AdjustStockDialogState extends ConsumerState<AdjustStockDialog> {
         _problem = failure.message;
       });
     } catch (error, stack) {
-      AppLogger.error('Stock adjustment failed', error: error, stackTrace: stack);
+      AppLogger.error(
+        'Stock adjustment failed',
+        error: error,
+        stackTrace: stack,
+      );
       if (!mounted) return;
       setState(() {
         _saving = false;
@@ -134,8 +140,9 @@ class _AdjustStockDialogState extends ConsumerState<AdjustStockDialog> {
                       ? 'Counted quantity ($symbol)'
                       : 'Quantity ($symbol)',
                   controller: _qty,
-                  keyboardType:
-                      const TextInputType.numberWithOptions(decimal: true),
+                  keyboardType: const TextInputType.numberWithOptions(
+                    decimal: true,
+                  ),
                   inputFormatters: [
                     FilteringTextInputFormatter.allow(RegExp('[0-9.]')),
                     LengthLimitingTextInputFormatter(10),

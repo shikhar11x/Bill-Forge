@@ -20,6 +20,6 @@ class Suppliers extends Table {
 
   @override
   List<Set<Column<Object>>> get uniqueKeys => [
-        {gstin},
-      ];
+    {gstin},
+  ];
 }

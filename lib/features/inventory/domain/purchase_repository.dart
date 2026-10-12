@@ -10,8 +10,5 @@ abstract interface class PurchaseRepository {
   /// Atomically stores the purchase and adds every line to stock. Throws
   /// `ConflictFailure` for an empty purchase, a non-positive quantity, or a
   /// product that is missing or not tracking stock.
-  Future<void> receive(
-    PurchaseDetail detail, {
-    required bool updateCostPrices,
-  });
+  Future<void> receive(PurchaseDetail detail, {required bool updateCostPrices});
 }

@@ -91,7 +91,11 @@ class _PurchasesTabState extends ConsumerState<PurchasesTab> {
         final toolbar = size.isMobile
             ? Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [search, const SizedBox(height: AppSpacing.md), add],
+                children: [
+                  search,
+                  const SizedBox(height: AppSpacing.md),
+                  add,
+                ],
               )
             : Row(
                 children: [
@@ -197,7 +201,9 @@ class _PurchasesTabState extends ConsumerState<PurchasesTab> {
                           formatDate(p.purchasedAt),
                           if (p.billNumber != null) 'Bill ${p.billNumber}',
                         ].join(' · '),
-                        style: theme.textTheme.bodySmall?.copyWith(color: muted),
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: muted,
+                        ),
                       ),
                     ],
                   ),

@@ -63,8 +63,7 @@ class _SuppliersTabState extends ConsumerState<SuppliersTab> {
       final confirmed = await AppDialog.confirm(
         context,
         title: 'Archive "${supplier.name}"?',
-        message:
-            'They will no longer appear when recording purchases. Past purchases keep their name. You can restore them from the Archived filter.',
+        message: 'They will no longer appear when recording purchases. Past purchases keep their name. You can restore them from the Archived filter.',
         confirmLabel: 'Archive',
         destructive: true,
       );
@@ -92,24 +91,24 @@ class _SuppliersTabState extends ConsumerState<SuppliersTab> {
   }
 
   Widget _menu(Supplier supplier) => PopupMenuButton<_SupplierAction>(
-        tooltip: 'Supplier actions',
-        icon: const Icon(Icons.more_vert_rounded),
-        onSelected: (a) {
-          switch (a) {
-            case _SupplierAction.edit:
-              _edit(supplier);
-            case _SupplierAction.toggleArchive:
-              _toggleArchive(supplier);
-          }
-        },
-        itemBuilder: (context) => [
-          const PopupMenuItem(value: _SupplierAction.edit, child: Text('Edit')),
-          PopupMenuItem(
-            value: _SupplierAction.toggleArchive,
-            child: Text(supplier.isArchived ? 'Restore' : 'Archive'),
-          ),
-        ],
-      );
+    tooltip: 'Supplier actions',
+    icon: const Icon(Icons.more_vert_rounded),
+    onSelected: (a) {
+      switch (a) {
+        case _SupplierAction.edit:
+          _edit(supplier);
+        case _SupplierAction.toggleArchive:
+          _toggleArchive(supplier);
+      }
+    },
+    itemBuilder: (context) => [
+      const PopupMenuItem(value: _SupplierAction.edit, child: Text('Edit')),
+      PopupMenuItem(
+        value: _SupplierAction.toggleArchive,
+        child: Text(supplier.isArchived ? 'Restore' : 'Archive'),
+      ),
+    ],
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -229,10 +228,10 @@ class _SuppliersTabState extends ConsumerState<SuppliersTab> {
         separatorBuilder: (_, _) => const SizedBox(height: AppSpacing.md),
         itemBuilder: (context, i) {
           final s = items[i];
-          final subtitle = [s.phone, s.city]
-              .whereType<String>()
-              .where((v) => v.isNotEmpty)
-              .join(' · ');
+          final subtitle = [
+            s.phone,
+            s.city,
+          ].whereType<String>().where((v) => v.isNotEmpty).join(' · ');
           return AppCard(
             onTap: () => _edit(s),
             padding: const EdgeInsets.fromLTRB(
@@ -251,7 +250,9 @@ class _SuppliersTabState extends ConsumerState<SuppliersTab> {
                       if (subtitle.isNotEmpty)
                         Text(
                           subtitle,
-                          style: theme.textTheme.bodySmall?.copyWith(color: muted),
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: muted,
+                          ),
                         ),
                     ],
                   ),

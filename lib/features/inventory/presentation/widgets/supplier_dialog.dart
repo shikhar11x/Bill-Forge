@@ -67,7 +67,9 @@ class _SupplierDialogState extends ConsumerState<SupplierDialog> {
       final now = DateTime.now();
       final existing = widget.supplier;
       final rawPhone = _optional(_phone);
-      await ref.read(supplierRepositoryProvider).save(
+      await ref
+          .read(supplierRepositoryProvider)
+          .save(
             Supplier(
               id: existing?.id ?? newId('sup'),
               name: _name.text.trim(),
@@ -89,7 +91,11 @@ class _SupplierDialogState extends ConsumerState<SupplierDialog> {
         _problem = failure.message;
       });
     } catch (error, stack) {
-      AppLogger.error('Saving supplier failed', error: error, stackTrace: stack);
+      AppLogger.error(
+        'Saving supplier failed',
+        error: error,
+        stackTrace: stack,
+      );
       if (!mounted) return;
       setState(() {
         _saving = false;
@@ -119,8 +125,10 @@ class _SupplierDialogState extends ConsumerState<SupplierDialog> {
                   controller: _name,
                   textCapitalization: TextCapitalization.words,
                   validator: (v) {
-                    final required =
-                        Validators.required(v, message: 'Name is required');
+                    final required = Validators.required(
+                      v,
+                      message: 'Name is required',
+                    );
                     return required ?? Validators.maxLength(80)(v);
                   },
                 ),
@@ -147,7 +155,9 @@ class _SupplierDialogState extends ConsumerState<SupplierDialog> {
                       controller: _gstin,
                       textCapitalization: TextCapitalization.characters,
                       inputFormatters: [
-                        FilteringTextInputFormatter.allow(RegExp('[0-9a-zA-Z]')),
+                        FilteringTextInputFormatter.allow(
+                          RegExp('[0-9a-zA-Z]'),
+                        ),
                         LengthLimitingTextInputFormatter(15),
                       ],
                       validator: Validators.optional(Validators.gstin),

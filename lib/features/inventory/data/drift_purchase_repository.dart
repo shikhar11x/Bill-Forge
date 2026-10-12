@@ -21,14 +21,14 @@ class DriftPurchaseRepository implements PurchaseRepository {
       ..orderBy([
         (t) => OrderingTerm.desc(t.purchasedAt),
         (t) => OrderingTerm(
-              expression: const CustomExpression<int>('rowid'),
-              mode: OrderingMode.desc,
-            ),
+          expression: const CustomExpression<int>('rowid'),
+          mode: OrderingMode.desc,
+        ),
       ])
       ..limit(query.limit);
-    return select
-        .watch()
-        .map((rows) => rows.map(purchaseFromRow).toList(growable: false));
+    return select.watch().map(
+      (rows) => rows.map(purchaseFromRow).toList(growable: false),
+    );
   }
 
   Expression<bool> _filter($PurchasesTable t, PurchaseQuery q) {
@@ -40,14 +40,15 @@ class DriftPurchaseRepository implements PurchaseRepository {
 
   @override
   Future<PurchaseDetail?> getDetail(String id) async {
-    final row = await (_db.select(_db.purchases)
-          ..where((t) => t.id.equals(id)))
-        .getSingleOrNull();
+    final row = await (_db.select(
+      _db.purchases,
+    )..where((t) => t.id.equals(id))).getSingleOrNull();
     if (row == null) return null;
-    final items = await (_db.select(_db.purchaseItems)
-          ..where((t) => t.purchaseId.equals(id))
-          ..orderBy([(t) => OrderingTerm.asc(t.position)]))
-        .get();
+    final items =
+        await (_db.select(_db.purchaseItems)
+              ..where((t) => t.purchaseId.equals(id))
+              ..orderBy([(t) => OrderingTerm.asc(t.position)]))
+            .get();
     return PurchaseDetail(
       purchase: purchaseFromRow(row),
       items: items.map(purchaseItemFromRow).toList(growable: false),
@@ -69,9 +70,9 @@ class DriftPurchaseRepository implements PurchaseRepository {
         if (item.qtyMilli <= 0) {
           throw ConflictFailure('Enter a quantity for "${item.productName}".');
         }
-        final product = await (_db.select(_db.products)
-              ..where((t) => t.id.equals(item.productId)))
-            .getSingleOrNull();
+        final product = await (_db.select(
+          _db.products,
+        )..where((t) => t.id.equals(item.productId))).getSingleOrNull();
         if (product == null) {
           throw ConflictFailure('"${item.productName}" no longer exists.');
         }
@@ -84,9 +85,7 @@ class DriftPurchaseRepository implements PurchaseRepository {
 
       await _db.into(_db.purchases).insert(purchaseToCompanion(purchase));
       for (final item in detail.items) {
-        await _db
-            .into(_db.purchaseItems)
-            .insert(purchaseItemToCompanion(item));
+        await _db.into(_db.purchaseItems).insert(purchaseItemToCompanion(item));
       }
 
       final note = [
@@ -106,9 +105,9 @@ class DriftPurchaseRepository implements PurchaseRepository {
           at: purchase.createdAt,
         );
         if (updateCostPrices) {
-          await (_db.update(_db.products)
-                ..where((t) => t.id.equals(item.productId)))
-              .write(
+          await (_db.update(
+            _db.products,
+          )..where((t) => t.id.equals(item.productId))).write(
             ProductsCompanion(
               purchasePricePaise: Value(item.unitCostPaise),
               updatedAt: Value(purchase.createdAt),

@@ -31,7 +31,9 @@ class PurchaseDetailPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return ref.watch(purchaseDetailProvider(purchaseId)).when(
+    return ref
+        .watch(purchaseDetailProvider(purchaseId))
+        .when(
           loading: () =>
               const Center(child: CircularProgressIndicator(strokeWidth: 2)),
           error: (error, stack) => AppErrorState(

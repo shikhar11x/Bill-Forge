@@ -31,7 +31,8 @@ final purchaseRepositoryProvider = Provider<PurchaseRepository>(
 
 class InventoryQueryNotifier extends Notifier<ProductQuery> {
   @override
-  ProductQuery build() => const ProductQuery(stockFilter: StockFilter.attention);
+  ProductQuery build() =>
+      const ProductQuery(stockFilter: StockFilter.attention);
 
   void setSearch(String value) =>
       state = state.copyWith(search: value, limit: kProductPageSize);
@@ -45,8 +46,8 @@ class InventoryQueryNotifier extends Notifier<ProductQuery> {
 
 final inventoryQueryProvider =
     NotifierProvider<InventoryQueryNotifier, ProductQuery>(
-  InventoryQueryNotifier.new,
-);
+      InventoryQueryNotifier.new,
+    );
 
 final inventoryProductsProvider = StreamProvider<List<Product>>((ref) {
   final query = ref.watch(inventoryQueryProvider);
@@ -58,20 +59,20 @@ final lowStockCountProvider = StreamProvider<int>(
 );
 
 /// Product picker (purchases). Starts clean each time it is opened.
-final productSearchProvider =
-    StreamProvider.autoDispose.family<List<Product>, String>((ref, search) {
-  return ref
-      .watch(productRepositoryProvider)
-      .watchProducts(ProductQuery(search: search, limit: 50));
-});
+final productSearchProvider = StreamProvider.autoDispose
+    .family<List<Product>, String>((ref, search) {
+      return ref
+          .watch(productRepositoryProvider)
+          .watchProducts(ProductQuery(search: search, limit: 50));
+    });
 
 /// Stock history of one product, newest first. The key is (productId, limit).
 final stockMovementsProvider = StreamProvider.autoDispose
     .family<List<StockMovement>, (String, int)>((ref, args) {
-  return ref
-      .watch(stockRepositoryProvider)
-      .watchMovements(args.$1, limit: args.$2);
-});
+      return ref
+          .watch(stockRepositoryProvider)
+          .watchMovements(args.$1, limit: args.$2);
+    });
 
 // --- Suppliers ---------------------------------------------------------
 
@@ -87,8 +88,8 @@ class SupplierQueryNotifier extends Notifier<SupplierQuery> {
 
 final supplierQueryProvider =
     NotifierProvider<SupplierQueryNotifier, SupplierQuery>(
-  SupplierQueryNotifier.new,
-);
+      SupplierQueryNotifier.new,
+    );
 
 final suppliersProvider = StreamProvider<List<Supplier>>((ref) {
   final query = ref.watch(supplierQueryProvider);
@@ -117,15 +118,15 @@ class PurchaseQueryNotifier extends Notifier<PurchaseQuery> {
 
 final purchaseQueryProvider =
     NotifierProvider<PurchaseQueryNotifier, PurchaseQuery>(
-  PurchaseQueryNotifier.new,
-);
+      PurchaseQueryNotifier.new,
+    );
 
 final purchasesProvider = StreamProvider<List<Purchase>>((ref) {
   final query = ref.watch(purchaseQueryProvider);
   return ref.watch(purchaseRepositoryProvider).watchPurchases(query);
 });
 
-final purchaseDetailProvider =
-    FutureProvider.autoDispose.family<PurchaseDetail?, String>(
-  (ref, id) => ref.watch(purchaseRepositoryProvider).getDetail(id),
-);
+final purchaseDetailProvider = FutureProvider.autoDispose
+    .family<PurchaseDetail?, String>(
+      (ref, id) => ref.watch(purchaseRepositoryProvider).getDetail(id),
+    );

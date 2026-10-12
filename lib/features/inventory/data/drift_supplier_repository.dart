@@ -18,17 +18,19 @@ class DriftSupplierRepository implements SupplierRepository {
       ..where((t) => _filter(t, query))
       ..orderBy([(t) => OrderingTerm.asc(t.name.collate(Collate.noCase))])
       ..limit(kSupplierLimit);
-    return select
-        .watch()
-        .map((rows) => rows.map(supplierFromRow).toList(growable: false));
+    return select.watch().map(
+      (rows) => rows.map(supplierFromRow).toList(growable: false),
+    );
   }
 
   Expression<bool> _filter($SuppliersTable t, SupplierQuery q) {
-    Expression<bool> e =
-        q.showArchived ? t.archivedAt.isNotNull() : t.archivedAt.isNull();
+    Expression<bool> e = q.showArchived
+        ? t.archivedAt.isNotNull()
+        : t.archivedAt.isNull();
     final text = q.search.trim().toLowerCase();
     if (text.isNotEmpty) {
-      e = e &
+      e =
+          e &
           (t.name.lower().contains(text) |
               t.phone.lower().contains(text) |
               t.gstin.lower().contains(text) |
@@ -39,9 +41,9 @@ class DriftSupplierRepository implements SupplierRepository {
 
   @override
   Future<Supplier?> getById(String id) async {
-    final row = await (_db.select(_db.suppliers)
-          ..where((t) => t.id.equals(id)))
-        .getSingleOrNull();
+    final row = await (_db.select(
+      _db.suppliers,
+    )..where((t) => t.id.equals(id))).getSingleOrNull();
     return row == null ? null : supplierFromRow(row);
   }
 
@@ -49,21 +51,22 @@ class DriftSupplierRepository implements SupplierRepository {
   Future<void> save(Supplier supplier) async {
     final gstin = supplier.gstin;
     if (gstin != null) {
-      final clash = await (_db.select(_db.suppliers)
-            ..where(
-              (t) => t.gstin.equals(gstin) & t.id.equals(supplier.id).not(),
-            )
-            ..limit(1))
-          .getSingleOrNull();
+      final clash =
+          await (_db.select(_db.suppliers)
+                ..where(
+                  (t) => t.gstin.equals(gstin) & t.id.equals(supplier.id).not(),
+                )
+                ..limit(1))
+              .getSingleOrNull();
       if (clash != null) {
         throw const ConflictFailure(
           'Another supplier (possibly archived) already uses this GSTIN.',
         );
       }
     }
-    await _db.into(_db.suppliers).insertOnConflictUpdate(
-          supplierToCompanion(supplier),
-        );
+    await _db
+        .into(_db.suppliers)
+        .insertOnConflictUpdate(supplierToCompanion(supplier));
   }
 
   @override

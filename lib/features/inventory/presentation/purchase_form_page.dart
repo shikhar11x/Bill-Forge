@@ -114,7 +114,9 @@ class _PurchaseFormPageState extends ConsumerState<PurchaseFormPage> {
 
     setState(() => _saving = true);
     try {
-      await ref.read(purchaseRepositoryProvider).receive(
+      await ref
+          .read(purchaseRepositoryProvider)
+          .receive(
             _form.toDetail(id: newId('pur'), now: DateTime.now()),
             updateCostPrices: _form.updateCostPrices,
           );
@@ -126,7 +128,11 @@ class _PurchaseFormPageState extends ConsumerState<PurchaseFormPage> {
       AppToast.show(context, failure.message, type: ToastType.error);
       setState(() => _saving = false);
     } catch (error, stack) {
-      AppLogger.error('Saving purchase failed', error: error, stackTrace: stack);
+      AppLogger.error(
+        'Saving purchase failed',
+        error: error,
+        stackTrace: stack,
+      );
       if (!mounted) return;
       AppToast.show(
         context,
@@ -187,8 +193,9 @@ class _PurchaseFormPageState extends ConsumerState<PurchaseFormPage> {
                         label: 'Supplier (optional)',
                         value: selected,
                         items: [_noSupplier, ...byId.keys],
-                        itemLabel: (id) =>
-                            id == _noSupplier ? 'No supplier' : (byId[id]?.name ?? ''),
+                        itemLabel: (id) => id == _noSupplier
+                            ? 'No supplier'
+                            : (byId[id]?.name ?? ''),
                         onChanged: (id) => _form.setSupplier(
                           id == null || id == _noSupplier ? null : byId[id],
                         ),
@@ -265,7 +272,10 @@ class _PurchaseFormPageState extends ConsumerState<PurchaseFormPage> {
                   builder: (context, _) => Row(
                     children: [
                       Expanded(
-                        child: Text('Total', style: theme.textTheme.titleMedium),
+                        child: Text(
+                          'Total',
+                          style: theme.textTheme.titleMedium,
+                        ),
                       ),
                       Text(
                         formatPaise(_form.totalPaise),
