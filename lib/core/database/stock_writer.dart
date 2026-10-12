@@ -22,15 +22,17 @@ Future<int?> applyStockMovement(
 }) async {
   if (deltaMilli == 0) return null;
 
-  final product = await (db.select(db.products)
-        ..where((t) => t.id.equals(productId)))
-      .getSingleOrNull();
+  final product = await (db.select(
+    db.products,
+  )..where((t) => t.id.equals(productId))).getSingleOrNull();
   if (product == null || !product.trackStock) return null;
 
   final now = at ?? DateTime.now();
   final balance = product.stockMilli + deltaMilli;
 
-  await db.into(db.stockMovements).insert(
+  await db
+      .into(db.stockMovements)
+      .insert(
         StockMovementsCompanion.insert(
           id: newId('mov'),
           productId: productId,

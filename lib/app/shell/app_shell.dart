@@ -96,8 +96,9 @@ class AppShell extends StatelessWidget {
           );
         }
 
-        final selectedIndex =
-            shellDestinations.indexWhere((d) => d.matches(location));
+        final selectedIndex = shellDestinations.indexWhere(
+          (d) => d.matches(location),
+        );
         return Scaffold(
           body: Row(
             children: [
