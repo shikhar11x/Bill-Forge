@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:billforge/features/products/application/product_providers.dart';
 import 'package:billforge/features/shop/application/shop_providers.dart';
 
 import '../support/fakes.dart';
@@ -34,6 +35,7 @@ void main() {
             ),
           ),
           authControllerProvider.overrideWith(_SignedInController.new),
+          productRepositoryProvider.overrideWithValue(FakeProductRepository()),
           shopProfileProvider.overrideWith((ref) => Stream.value(sampleShop())),
         ],
         child: const BillForgeApp(),
