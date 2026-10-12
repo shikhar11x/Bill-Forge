@@ -7,6 +7,7 @@ import 'package:billforge/features/inventory/application/inventory_providers.dar
 import 'package:billforge/features/inventory/presentation/inventory_page.dart';
 import 'package:billforge/features/products/application/product_providers.dart';
 import 'package:billforge/features/products/domain/product.dart';
+
 import '../../support/fakes.dart';
 import '../../support/inventory_fakes.dart';
 
@@ -22,12 +23,15 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
-          productRepositoryProvider
-              .overrideWithValue(FakeProductRepository(products)),
-          supplierRepositoryProvider
-              .overrideWithValue(FakeSupplierRepository()),
-          purchaseRepositoryProvider
-              .overrideWithValue(FakePurchaseRepository()),
+          productRepositoryProvider.overrideWithValue(
+            FakeProductRepository(products),
+          ),
+          supplierRepositoryProvider.overrideWithValue(
+            FakeSupplierRepository(),
+          ),
+          purchaseRepositoryProvider.overrideWithValue(
+            FakePurchaseRepository(),
+          ),
         ],
         child: MaterialApp(
           theme: AppTheme.dark(),
@@ -38,7 +42,11 @@ void main() {
     await tester.pumpAndSettle();
   }
 
-  final healthy = sampleProduct(id: 'a', name: 'Amul Butter', stockMilli: 50000);
+  final healthy = sampleProduct(
+    id: 'a',
+    name: 'Amul Butter',
+    stockMilli: 50000,
+  );
   final low = sampleProduct(
     id: 'b',
     name: 'Parle-G Biscuits',
@@ -47,8 +55,9 @@ void main() {
   );
   final out = sampleProduct(id: 'c', name: 'Maggi Noodles', stockMilli: 0);
 
-  testWidgets('Needs attention lists only low and out-of-stock products',
-      (tester) async {
+  testWidgets('Needs attention lists only low and out-of-stock products', (
+    tester,
+  ) async {
     await pumpPage(tester, products: [healthy, low, out]);
 
     expect(find.text('Parle-G Biscuits'), findsOneWidget);
@@ -66,14 +75,16 @@ void main() {
     expect(find.text('Maggi Noodles'), findsOneWidget);
   });
 
-  testWidgets('shows a reassuring empty state when nothing needs restocking',
-      (tester) async {
+  testWidgets('shows a reassuring empty state when nothing needs restocking', (
+    tester,
+  ) async {
     await pumpPage(tester, products: [healthy]);
     expect(find.text('Stock looks good'), findsOneWidget);
   });
 
-  testWidgets('the Purchases and Suppliers tabs show their empty states',
-      (tester) async {
+  testWidgets('the Purchases and Suppliers tabs show their empty states', (
+    tester,
+  ) async {
     await pumpPage(tester, products: [healthy]);
 
     await tester.tap(find.text('Purchases'));

@@ -12,14 +12,13 @@ Supplier sampleSupplier({
   String id = 's1',
   String name = 'Metro Wholesale',
   DateTime? archivedAt,
-}) =>
-    Supplier(
-      id: id,
-      name: name,
-      archivedAt: archivedAt,
-      createdAt: DateTime(2026, 1, 1),
-      updatedAt: DateTime(2026, 1, 1),
-    );
+}) => Supplier(
+  id: id,
+  name: name,
+  archivedAt: archivedAt,
+  createdAt: DateTime(2026, 1, 1),
+  updatedAt: DateTime(2026, 1, 1),
+);
 
 class AdjustCall {
   const AdjustCall(this.productId, this.deltaMilli, this.reason, this.note);
@@ -41,8 +40,7 @@ class FakeStockRepository implements StockRepository {
   Stream<List<StockMovement>> watchMovements(
     String productId, {
     required int limit,
-  }) =>
-      Stream.value(movements.take(limit).toList());
+  }) => Stream.value(movements.take(limit).toList());
 
   @override
   Future<void> adjust({
@@ -58,7 +56,7 @@ class FakeStockRepository implements StockRepository {
 
 class FakeSupplierRepository implements SupplierRepository {
   FakeSupplierRepository([List<Supplier> suppliers = const []])
-      : _suppliers = List.of(suppliers);
+    : _suppliers = List.of(suppliers);
 
   final List<Supplier> _suppliers;
   Supplier? saved;
@@ -96,15 +94,16 @@ class FakeSupplierRepository implements SupplierRepository {
 
 class FakePurchaseRepository implements PurchaseRepository {
   FakePurchaseRepository([List<PurchaseDetail> purchases = const []])
-      : _purchases = List.of(purchases);
+    : _purchases = List.of(purchases);
 
   final List<PurchaseDetail> _purchases;
   PurchaseDetail? received;
   bool? receivedUpdateCosts;
 
   @override
-  Stream<List<Purchase>> watchPurchases(PurchaseQuery query) =>
-      Stream.value(_purchases.map((d) => d.purchase).take(query.limit).toList());
+  Stream<List<Purchase>> watchPurchases(PurchaseQuery query) => Stream.value(
+    _purchases.map((d) => d.purchase).take(query.limit).toList(),
+  );
 
   @override
   Future<PurchaseDetail?> getDetail(String id) async {

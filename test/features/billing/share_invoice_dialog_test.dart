@@ -6,6 +6,7 @@ import 'package:billforge/app/theme/app_theme.dart';
 import 'package:billforge/features/billing/application/invoice_pdf_providers.dart';
 import 'package:billforge/features/billing/application/invoice_share_providers.dart';
 import 'package:billforge/features/billing/presentation/widgets/share_invoice_dialog.dart';
+
 import '../../support/fake_share_service.dart';
 import '../../support/invoice_document_fakes.dart';
 import '../../support/pdf_test_fonts.dart';
@@ -66,8 +67,9 @@ void main() {
     expect(service.chatPhone, isNull);
   });
 
-  testWidgets('an invalid number is rejected before anything opens',
-      (tester) async {
+  testWidgets('an invalid number is rejected before anything opens', (
+    tester,
+  ) async {
     await pumpDialog(tester);
     await tester.enterText(find.byType(TextFormField).first, '12345');
     await tester.tap(find.text('Open WhatsApp'));
@@ -96,8 +98,9 @@ void main() {
     expect(find.textContaining('Could not open WhatsApp'), findsOneWidget);
   });
 
-  testWidgets('Share PDF builds the invoice PDF and hands it over',
-      (tester) async {
+  testWidgets('Share PDF builds the invoice PDF and hands it over', (
+    tester,
+  ) async {
     await pumpDialog(tester);
     await tester.tap(find.text('Share PDF'));
     await tester.pumpAndSettle();
@@ -115,6 +118,9 @@ void main() {
     await tester.tap(find.text('Share PDF'));
     await tester.pumpAndSettle();
 
-    expect(find.text('Could not share the PDF. Please try again.'), findsOneWidget);
+    expect(
+      find.text('Could not share the PDF. Please try again.'),
+      findsOneWidget,
+    );
   });
 }

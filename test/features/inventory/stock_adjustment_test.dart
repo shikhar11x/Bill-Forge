@@ -8,13 +8,12 @@ String? validate(
   String text, {
   int current = 10000,
   bool fractional = true,
-}) =>
-    validateAdjustment(
-      mode: mode,
-      currentMilli: current,
-      text: text,
-      fractional: fractional,
-    );
+}) => validateAdjustment(
+  mode: mode,
+  currentMilli: current,
+  text: text,
+  fractional: fractional,
+);
 
 void main() {
   group('validateAdjustment', () {

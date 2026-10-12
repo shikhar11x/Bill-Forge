@@ -7,6 +7,7 @@ import 'package:billforge/core/errors/failure.dart';
 import 'package:billforge/features/inventory/application/inventory_providers.dart';
 import 'package:billforge/features/inventory/domain/movement_type.dart';
 import 'package:billforge/features/inventory/presentation/widgets/adjust_stock_dialog.dart';
+
 import '../../support/fakes.dart';
 import '../../support/inventory_fakes.dart';
 
@@ -59,8 +60,7 @@ void main() {
     expect(find.byType(AdjustStockDialog), findsNothing);
   });
 
-  testWidgets('remove with a reason records a negative change',
-      (tester) async {
+  testWidgets('remove with a reason records a negative change', (tester) async {
     await openDialog(tester);
     await tester.tap(find.text('Remove'));
     await tester.pumpAndSettle();
@@ -86,12 +86,16 @@ void main() {
     await tester.tap(find.text('Save adjustment'));
     await tester.pumpAndSettle();
 
-    expect(find.text('Cannot remove more than the current stock'), findsOneWidget);
+    expect(
+      find.text('Cannot remove more than the current stock'),
+      findsOneWidget,
+    );
     expect(repo.calls, isEmpty);
   });
 
-  testWidgets('a repository conflict is shown inside the dialog',
-      (tester) async {
+  testWidgets('a repository conflict is shown inside the dialog', (
+    tester,
+  ) async {
     repo.failure = const ConflictFailure('Stock cannot go below zero.');
     await openDialog(tester);
     await tester.enterText(find.byType(TextFormField).first, '5');

@@ -87,7 +87,7 @@ void main() {
     expect(purchaseToCompanion(purchase).totalPaise.value, 38000);
 
     final item = purchaseItemFromRow(
-      PurchaseItemRow(
+      const PurchaseItemRow(
         id: 'pur_1-1',
         purchaseId: 'pur_1',
         position: 0,

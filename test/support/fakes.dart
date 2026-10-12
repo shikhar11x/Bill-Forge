@@ -9,22 +9,22 @@ import 'package:billforge/features/shop/domain/shop_profile.dart';
 import 'package:billforge/features/shop/domain/shop_repository.dart';
 
 ShopProfile sampleShop({String name = 'Sharma General Store'}) => ShopProfile(
-      id: 'shop_1',
-      name: name,
-      businessType: BusinessType.grocery,
-      phone: '9876543210',
-      addressLine1: '12 Main Bazaar',
-      city: 'Gurugram',
-      state: 'Haryana',
-      pincode: '122001',
-      gstRegistration: GstRegistration.unregistered,
-      defaultGstRate: 0,
-      invoicePrefix: 'INV',
-      nextInvoiceNumber: 1,
-      primaryColorValue: 0xFF3F6FF0,
-      createdAt: DateTime(2026, 1, 1),
-      updatedAt: DateTime(2026, 1, 1),
-    );
+  id: 'shop_1',
+  name: name,
+  businessType: BusinessType.grocery,
+  phone: '9876543210',
+  addressLine1: '12 Main Bazaar',
+  city: 'Gurugram',
+  state: 'Haryana',
+  pincode: '122001',
+  gstRegistration: GstRegistration.unregistered,
+  defaultGstRate: 0,
+  invoicePrefix: 'INV',
+  nextInvoiceNumber: 1,
+  primaryColorValue: 0xFF3F6FF0,
+  createdAt: DateTime(2026, 1, 1),
+  updatedAt: DateTime(2026, 1, 1),
+);
 
 class FakeShopRepository implements ShopRepository {
   ShopProfile? saved;
@@ -48,24 +48,23 @@ Product sampleProduct({
   int stockMilli = 10000,
   int lowStockThresholdMilli = 0,
   DateTime? archivedAt,
-}) =>
-    Product(
-      id: id,
-      name: name,
-      sku: sku,
-      barcode: barcode,
-      sellingPricePaise: sellingPricePaise,
-      trackStock: trackStock,
-      stockMilli: stockMilli,
-      lowStockThresholdMilli: lowStockThresholdMilli,
-      archivedAt: archivedAt,
-      createdAt: DateTime(2026, 1, 1),
-      updatedAt: DateTime(2026, 1, 1),
-    );
+}) => Product(
+  id: id,
+  name: name,
+  sku: sku,
+  barcode: barcode,
+  sellingPricePaise: sellingPricePaise,
+  trackStock: trackStock,
+  stockMilli: stockMilli,
+  lowStockThresholdMilli: lowStockThresholdMilli,
+  archivedAt: archivedAt,
+  createdAt: DateTime(2026, 1, 1),
+  updatedAt: DateTime(2026, 1, 1),
+);
 
 class FakeProductRepository implements ProductRepository {
   FakeProductRepository([List<Product> products = const []])
-      : _products = List.of(products);
+    : _products = List.of(products);
 
   final List<Product> _products;
 
@@ -103,8 +102,8 @@ class FakeProductRepository implements ProductRepository {
 
   @override
   Stream<int> watchLowStockCount() => Stream.value(
-        _products.where((p) => !p.isArchived && _needsAttention(p)).length,
-      );
+    _products.where((p) => !p.isArchived && _needsAttention(p)).length,
+  );
 
   @override
   Future<Product?> getById(String id) async {
@@ -133,7 +132,7 @@ class FakeProductRepository implements ProductRepository {
 
 class FakeCategoryRepository implements CategoryRepository {
   FakeCategoryRepository([List<Category> categories = const []])
-      : _categories = List.of(categories);
+    : _categories = List.of(categories);
 
   final List<Category> _categories;
 

@@ -33,16 +33,20 @@ void main() {
     });
 
     test('lets the user pick a contact when there is no number', () {
-      expect(buildWhatsAppUri(message: 'Hi').toString(), 'https://wa.me/?text=Hi');
+      expect(
+        buildWhatsAppUri(message: 'Hi').toString(),
+        'https://wa.me/?text=Hi',
+      );
       expect(
         buildWhatsAppUri(phone: '123', message: 'Hi').toString(),
         'https://wa.me/?text=Hi',
       );
     });
 
-    test('percent-encodes the rupee sign and bold markers', () {
+    test('percent-encodes the rupee sign and keeps bold markers readable', () {
+      // Dart leaves "*" unescaped, which WhatsApp reads as bold markers.
       final uri = buildWhatsAppUri(message: '*Total* ₹5');
-      expect(uri.toString(), 'https://wa.me/?text=%2ATotal%2A%20%E2%82%B95');
+      expect(uri.toString(), 'https://wa.me/?text=*Total*%20%E2%82%B95');
     });
   });
 }

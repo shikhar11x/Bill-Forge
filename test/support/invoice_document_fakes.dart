@@ -7,6 +7,7 @@ import 'package:billforge/features/billing/domain/payment_method.dart';
 import 'package:billforge/features/billing/domain/shop_tax_context.dart';
 import 'package:billforge/features/products/domain/product_unit.dart';
 import 'package:billforge/features/shop/domain/shop_profile.dart';
+
 import 'customer_fakes.dart';
 import 'fakes.dart';
 
@@ -21,7 +22,8 @@ InvoiceDocument makeInvoiceDocument({
   int extraItems = 0,
   String firstItemName = 'Basmati Rice 5 kg',
 }) {
-  final seller = shop ??
+  final seller =
+      shop ??
       sampleShop().copyWith(
         paymentInstructions: 'UPI: sharma@upi',
         invoiceFooter: 'Thank you!',

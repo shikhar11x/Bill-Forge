@@ -8,6 +8,7 @@ import 'package:billforge/app/theme/app_theme.dart';
 import 'package:billforge/features/inventory/application/inventory_providers.dart';
 import 'package:billforge/features/inventory/presentation/purchase_form_page.dart';
 import 'package:billforge/features/products/application/product_providers.dart';
+
 import '../../support/fakes.dart';
 import '../../support/inventory_fakes.dart';
 
@@ -31,8 +32,7 @@ void main() {
         ),
         GoRoute(
           path: AppRoutes.purchaseNew,
-          builder: (context, state) =>
-              const Scaffold(body: PurchaseFormPage()),
+          builder: (context, state) => const Scaffold(body: PurchaseFormPage()),
         ),
       ],
     );
@@ -43,7 +43,11 @@ void main() {
           productRepositoryProvider.overrideWithValue(
             FakeProductRepository([
               sampleProduct(id: 'p1', name: 'Parle-G Biscuits'),
-              sampleProduct(id: 'p2', name: 'Service Charge', trackStock: false),
+              sampleProduct(
+                id: 'p2',
+                name: 'Service Charge',
+                trackStock: false,
+              ),
             ]),
           ),
           supplierRepositoryProvider.overrideWithValue(
@@ -65,8 +69,9 @@ void main() {
     await tester.pumpAndSettle();
   }
 
-  testWidgets('saving with no items asks for at least one product',
-      (tester) async {
+  testWidgets('saving with no items asks for at least one product', (
+    tester,
+  ) async {
     await pumpForm(tester);
     await tapSave(tester);
 
@@ -74,8 +79,9 @@ void main() {
     expect(purchases.received, isNull);
   });
 
-  testWidgets('a product without stock tracking cannot be added',
-      (tester) async {
+  testWidgets('a product without stock tracking cannot be added', (
+    tester,
+  ) async {
     await pumpForm(tester);
     await tester.tap(find.text('Add product'));
     await tester.pumpAndSettle();
@@ -86,8 +92,9 @@ void main() {
     expect(find.byKey(const ValueKey('qty-p2')), findsNothing);
   });
 
-  testWidgets('adding a product, entering quantity and cost, and saving',
-      (tester) async {
+  testWidgets('adding a product, entering quantity and cost, and saving', (
+    tester,
+  ) async {
     await pumpForm(tester);
     await tester.tap(find.text('Add product'));
     await tester.pumpAndSettle();
