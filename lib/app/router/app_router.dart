@@ -2,7 +2,10 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-
+import 'package:billforge/features/inventory/presentation/inventory_page.dart';
+import 'package:billforge/features/inventory/presentation/purchase_detail_page.dart';
+import 'package:billforge/features/inventory/presentation/purchase_form_page.dart';
+import 'package:billforge/features/inventory/presentation/stock_history_page.dart';
 import 'package:billforge/app/router/app_routes.dart';
 import 'package:billforge/app/router/not_found_page.dart';
 import 'package:billforge/app/shell/app_shell.dart';
@@ -187,12 +190,38 @@ final routerProvider = Provider<GoRouter>((ref) {
               ),
             ],
           ),
-          _shellRoute(
-            AppRoutes.inventory,
-            const ComingSoonPage(
-              title: 'Inventory',
-              icon: Icons.inventory_2_rounded,
-            ),
+          GoRoute(
+            path: AppRoutes.inventory,
+            pageBuilder: (context, state) =>
+                _noTransition(state, const InventoryPage()),
+            routes: [
+              // 'purchases/new' must stay above 'purchases/:id'.
+              GoRoute(
+                path: 'purchases/new',
+                pageBuilder: (context, state) =>
+                    _noTransition(state, const PurchaseFormPage()),
+              ),
+              GoRoute(
+                path: 'purchases/:id',
+                pageBuilder: (context, state) {
+                  final id = state.pathParameters['id']!;
+                  return _noTransition(
+                    state,
+                    PurchaseDetailPage(key: ValueKey(id), purchaseId: id),
+                  );
+                },
+              ),
+              GoRoute(
+                path: 'stock/:productId',
+                pageBuilder: (context, state) {
+                  final id = state.pathParameters['productId']!;
+                  return _noTransition(
+                    state,
+                    StockHistoryPage(key: ValueKey(id), productId: id),
+                  );
+                },
+              ),
+            ],
           ),
           _shellRoute(
             AppRoutes.reports,

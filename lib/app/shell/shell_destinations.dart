@@ -73,7 +73,6 @@ const shellDestinations = <ShellDestination>[
     icon: Icons.settings_outlined,
     selectedIcon: Icons.settings_rounded,
     path: AppRoutes.settings,
-    showInBottomNav: true,
     pinnedToBottom: true,
   ),
 ];

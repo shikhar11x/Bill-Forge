@@ -8,6 +8,8 @@ import 'package:billforge/core/widgets/app_empty_state.dart';
 import 'package:billforge/core/widgets/app_stat_card.dart';
 import 'package:billforge/core/widgets/page_container.dart';
 import 'package:billforge/features/auth/application/auth_controller.dart';
+import 'package:billforge/core/utils/async_value_x.dart';
+import 'package:billforge/features/inventory/application/inventory_providers.dart';
 
 /// Layout shell only. Real numbers arrive with the billing/reports phases.
 class DashboardPage extends ConsumerWidget {
@@ -46,11 +48,12 @@ class DashboardPage extends ConsumerWidget {
   }
 }
 
-class _StatGrid extends StatelessWidget {
+class _StatGrid extends ConsumerWidget {
   const _StatGrid();
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final lowStock = ref.watch(lowStockCountProvider).dataOrNull;
     final stats = [
       AppStatCard(
         label: "Today's sales",
@@ -67,9 +70,9 @@ class _StatGrid extends StatelessWidget {
         value: formatInr(0),
         icon: Icons.schedule_rounded,
       ),
-      const AppStatCard(
+      AppStatCard(
         label: 'Low-stock items',
-        value: '0',
+        value: lowStock == null ? '—' : '$lowStock',
         icon: Icons.warning_amber_rounded,
       ),
     ];

@@ -17,6 +17,10 @@ abstract final class AppRoutes {
   static const customerNew = '/customers/new';
   static String customerEdit(String id) => '/customers/$id/edit';
   static const inventory = '/inventory';
+  static const purchaseNew = '/inventory/purchases/new';
+  static String purchase(String id) => '/inventory/purchases/$id';
+  static String stockHistory(String productId) =>
+      '/inventory/stock/$productId';
   static const reports = '/reports';
   static const settings = '/settings';
 }
