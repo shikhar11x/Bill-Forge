@@ -259,10 +259,23 @@ class InventorySection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return ListenableBuilder(
       listenable: form,
       builder: (context, _) {
         final symbol = form.unit.symbol;
+        final lowStock = AppTextField(
+          label: 'Low-stock alert at ($symbol)',
+          helper: 'You will see a warning at or below this level.',
+          controller: form.lowStock,
+          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+          inputFormatters: _quantityFormatters,
+          validator: ProductValidators.quantity(
+            fractional: () => form.unit.fractional,
+            label: 'Alert level',
+          ),
+        );
+
         return Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -277,38 +290,40 @@ class InventorySection extends StatelessWidget {
             ),
             if (form.trackStock) ...[
               const SizedBox(height: AppSpacing.md),
-              AppFieldRow(
-                children: [
-                  AppTextField(
-                    label: isNew
-                        ? 'Opening stock ($symbol)'
-                        : 'Stock quantity ($symbol)',
-                    controller: form.stock,
-                    keyboardType: const TextInputType.numberWithOptions(
-                      decimal: true,
+              if (isNew)
+                AppFieldRow(
+                  children: [
+                    AppTextField(
+                      label: 'Opening stock ($symbol)',
+                      controller: form.stock,
+                      keyboardType: const TextInputType.numberWithOptions(
+                        decimal: true,
+                      ),
+                      inputFormatters: _quantityFormatters,
+                      textInputAction: TextInputAction.next,
+                      validator: ProductValidators.quantity(
+                        fractional: () => form.unit.fractional,
+                        label: 'Stock',
+                      ),
                     ),
-                    inputFormatters: _quantityFormatters,
-                    textInputAction: TextInputAction.next,
-                    validator: ProductValidators.quantity(
-                      fractional: () => form.unit.fractional,
-                      label: 'Stock',
-                    ),
+                    lowStock,
+                  ],
+                )
+              else ...[
+                Text(
+                  'Current stock: ${form.stock.text} $symbol',
+                  style: theme.textTheme.titleSmall,
+                ),
+                const SizedBox(height: AppSpacing.xs),
+                Text(
+                  'To change it, use Adjust stock in Inventory, so every change is recorded.',
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
                   ),
-                  AppTextField(
-                    label: 'Low-stock alert at ($symbol)',
-                    helper: 'You will see a warning at or below this level.',
-                    controller: form.lowStock,
-                    keyboardType: const TextInputType.numberWithOptions(
-                      decimal: true,
-                    ),
-                    inputFormatters: _quantityFormatters,
-                    validator: ProductValidators.quantity(
-                      fractional: () => form.unit.fractional,
-                      label: 'Alert level',
-                    ),
-                  ),
-                ],
-              ),
+                ),
+                const SizedBox(height: AppSpacing.lg),
+                lowStock,
+              ],
             ],
           ],
         );

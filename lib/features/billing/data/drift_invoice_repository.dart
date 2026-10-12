@@ -8,6 +8,8 @@ import 'package:billforge/features/billing/domain/invoice.dart';
 import 'package:billforge/features/billing/domain/invoice_query.dart';
 import 'package:billforge/features/billing/domain/invoice_repository.dart';
 import 'package:billforge/features/billing/domain/payment_method.dart';
+import 'package:billforge/core/database/stock_writer.dart';
+import 'package:billforge/features/inventory/domain/movement_type.dart';
 import 'package:billforge/features/shop/domain/invoice_number.dart';
 
 class DriftInvoiceRepository implements InvoiceRepository {
@@ -135,17 +137,15 @@ class DriftInvoiceRepository implements InvoiceRepository {
       for (final item in draft.items) {
         final productId = item.productId;
         if (productId == null) continue;
-        final product = await (_db.select(
-          _db.products,
-        )..where((t) => t.id.equals(productId))).getSingleOrNull();
-        if (product == null || !product.trackStock) continue;
-        await (_db.update(
-          _db.products,
-        )..where((t) => t.id.equals(productId))).write(
-          ProductsCompanion(
-            stockMilli: Value(product.stockMilli - item.qtyMilli),
-            updatedAt: Value(now),
-          ),
+        await applyStockMovement(
+          _db,
+          productId: productId,
+          type: MovementType.sale,
+          deltaMilli: -item.qtyMilli,
+          refType: StockRef.invoice,
+          refId: base.id,
+          note: number,
+          at: now,
         );
       }
 

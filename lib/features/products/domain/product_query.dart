@@ -4,7 +4,8 @@ part 'product_query.freezed.dart';
 
 const kProductPageSize = 30;
 
-enum StockFilter { all, low, out }
+/// `attention` is low or out of stock together (used by Inventory).
+enum StockFilter { all, low, out, attention }
 
 @freezed
 abstract class ProductQuery with _$ProductQuery {
