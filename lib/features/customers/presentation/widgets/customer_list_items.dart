@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'package:billforge/app/theme/app_colors.dart';
 import 'package:billforge/app/theme/app_spacing.dart';
 import 'package:billforge/core/utils/formatters.dart';
 import 'package:billforge/core/widgets/app_card.dart';
@@ -31,17 +32,19 @@ class CustomerAvatar extends StatelessWidget {
   }
 }
 
-enum _MenuAction { edit, toggleArchive }
+enum _MenuAction { open, edit, toggleArchive }
 
 class CustomerMenu extends StatelessWidget {
   const CustomerMenu({
     required this.customer,
+    required this.onOpen,
     required this.onEdit,
     required this.onToggleArchive,
     super.key,
   });
 
   final Customer customer;
+  final VoidCallback onOpen;
   final VoidCallback onEdit;
   final VoidCallback onToggleArchive;
 
@@ -52,6 +55,8 @@ class CustomerMenu extends StatelessWidget {
       icon: const Icon(Icons.more_vert_rounded),
       onSelected: (action) {
         switch (action) {
+          case _MenuAction.open:
+            onOpen();
           case _MenuAction.edit:
             onEdit();
           case _MenuAction.toggleArchive:
@@ -59,6 +64,13 @@ class CustomerMenu extends StatelessWidget {
         }
       },
       itemBuilder: (context) => [
+        const PopupMenuItem(
+          value: _MenuAction.open,
+          child: _MenuRow(
+            icon: Icons.account_balance_wallet_outlined,
+            label: 'View account',
+          ),
+        ),
         const PopupMenuItem(
           value: _MenuAction.edit,
           child: _MenuRow(icon: Icons.edit_outlined, label: 'Edit'),
@@ -95,27 +107,31 @@ class _MenuRow extends StatelessWidget {
   }
 }
 
-/// Mobile list item.
+/// Mobile list item. Tapping opens the customer's account.
 class CustomerCard extends StatelessWidget {
   const CustomerCard({
     required this.customer,
+    required this.outstandingPaise,
     required this.onTap,
+    required this.onEdit,
     required this.onToggleArchive,
     super.key,
   });
 
   final Customer customer;
+  final int outstandingPaise;
   final VoidCallback onTap;
+  final VoidCallback onEdit;
   final VoidCallback onToggleArchive;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final muted = theme.colorScheme.onSurfaceVariant;
-    final subtitle = [
-      customer.phone,
-      customer.locationLabel,
-    ].whereType<String>().where((s) => s.isNotEmpty).join(' · ');
+    final subtitle = [customer.phone, customer.locationLabel]
+        .whereType<String>()
+        .where((s) => s.isNotEmpty)
+        .join(' · ');
     final limit = customer.creditLimitPaise;
 
     return AppCard(
@@ -149,6 +165,16 @@ class CustomerCard extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                   ),
                 ],
+                if (outstandingPaise > 0) ...[
+                  const SizedBox(height: AppSpacing.xs),
+                  Text(
+                    'Owes ${formatPaise(outstandingPaise)}',
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: AppColors.warning,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
                 if (limit != null) ...[
                   const SizedBox(height: AppSpacing.xs),
                   Text(
@@ -161,7 +187,8 @@ class CustomerCard extends StatelessWidget {
           ),
           CustomerMenu(
             customer: customer,
-            onEdit: onTap,
+            onOpen: onTap,
+            onEdit: onEdit,
             onToggleArchive: onToggleArchive,
           ),
         ],

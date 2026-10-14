@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:billforge/app/router/app_routes.dart';
+import 'package:billforge/app/theme/app_colors.dart';
 import 'package:billforge/app/theme/app_spacing.dart';
 import 'package:billforge/core/errors/failure.dart';
 import 'package:billforge/core/responsive/breakpoints.dart';
@@ -21,6 +22,7 @@ import 'package:billforge/core/widgets/app_toast.dart';
 import 'package:billforge/features/customers/application/customer_providers.dart';
 import 'package:billforge/features/customers/domain/customer.dart';
 import 'package:billforge/features/customers/presentation/widgets/customer_list_items.dart';
+import 'package:billforge/features/payments/application/payment_providers.dart';
 
 class CustomersPage extends ConsumerStatefulWidget {
   const CustomersPage({super.key});
@@ -62,8 +64,13 @@ class _CustomersPageState extends ConsumerState<CustomersPage> {
 
   void _add() => context.push(AppRoutes.customerNew);
 
+  void _open(Customer customer) =>
+      context.push(AppRoutes.customerAccount(customer.id));
+
   void _edit(Customer customer) =>
       context.push(AppRoutes.customerEdit(customer.id));
+
+  void _outstanding() => context.push(AppRoutes.customerOutstanding);
 
   Future<void> _toggleArchive(Customer customer) async {
     final archive = !customer.isArchived;
@@ -71,7 +78,8 @@ class _CustomersPageState extends ConsumerState<CustomersPage> {
       final confirmed = await AppDialog.confirm(
         context,
         title: 'Archive "${customer.name}"?',
-        message: 'They will be hidden from customer lists and billing. You can restore them from the Archived filter.',
+        message:
+            'They will be hidden from customer lists and billing. You can restore them from the Archived filter.',
         confirmLabel: 'Archive',
         destructive: true,
       );
@@ -142,6 +150,13 @@ class _CustomersPageState extends ConsumerState<CustomersPage> {
                   archivedChip,
                   const SizedBox(width: AppSpacing.md),
                   AppButton(
+                    label: 'Outstanding',
+                    icon: Icons.account_balance_wallet_outlined,
+                    variant: AppButtonVariant.secondary,
+                    onPressed: _outstanding,
+                  ),
+                  const SizedBox(width: AppSpacing.md),
+                  AppButton(
                     label: 'Add customer',
                     icon: Icons.add_rounded,
                     onPressed: _add,
@@ -157,19 +172,27 @@ class _CustomersPageState extends ConsumerState<CustomersPage> {
                     onChanged: notifier.setSearch,
                   ),
                   const SizedBox(height: AppSpacing.md),
-                  Row(
+                  Wrap(
+                    spacing: AppSpacing.md,
+                    runSpacing: AppSpacing.sm,
                     children: [
                       archivedChip,
-                      const SizedBox(width: AppSpacing.md),
-                      Expanded(
-                        child: AppButton(
-                          label: 'Add customer',
-                          icon: Icons.add_rounded,
-                          expanded: true,
-                          onPressed: _add,
+                      ActionChip(
+                        avatar: const Icon(
+                          Icons.account_balance_wallet_outlined,
+                          size: 16,
                         ),
+                        label: const Text('Outstanding'),
+                        onPressed: _outstanding,
                       ),
                     ],
+                  ),
+                  const SizedBox(height: AppSpacing.md),
+                  AppButton(
+                    label: 'Add customer',
+                    icon: Icons.add_rounded,
+                    expanded: true,
+                    onPressed: _add,
                   ),
                 ],
               );
@@ -177,9 +200,8 @@ class _CustomersPageState extends ConsumerState<CustomersPage> {
         return Align(
           alignment: Alignment.topCenter,
           child: ConstrainedBox(
-            constraints: const BoxConstraints(
-              maxWidth: AppLayout.contentMaxWidth,
-            ),
+            constraints:
+                const BoxConstraints(maxWidth: AppLayout.contentMaxWidth),
             child: Padding(
               padding: EdgeInsets.all(wide ? AppSpacing.xxl : AppSpacing.lg),
               child: Column(
@@ -200,6 +222,7 @@ class _CustomersPageState extends ConsumerState<CustomersPage> {
   Widget _content(ScreenSize size) {
     final async = ref.watch(customersProvider);
     final query = ref.watch(customerQueryProvider);
+    final balances = ref.watch(customerBalancesProvider);
     final items = async.dataOrNull;
 
     if (items == null) {
@@ -268,7 +291,9 @@ class _CustomersPageState extends ConsumerState<CustomersPage> {
           final customer = items[i];
           return CustomerCard(
             customer: customer,
-            onTap: () => _edit(customer),
+            outstandingPaise: balances[customer.id] ?? 0,
+            onTap: () => _open(customer),
+            onEdit: () => _edit(customer),
             onToggleArchive: () => _toggleArchive(customer),
           );
         },
@@ -282,7 +307,7 @@ class _CustomersPageState extends ConsumerState<CustomersPage> {
       controller: _scroll,
       rows: items,
       showLoadingRow: loadingMore,
-      onRowTap: _edit,
+      onRowTap: _open,
       columns: [
         AppColumn<Customer>(
           label: 'Customer',
@@ -306,9 +331,8 @@ class _CustomersPageState extends ConsumerState<CustomersPage> {
                     if (c.gstin != null)
                       Text(
                         c.gstin!,
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: muted,
-                        ),
+                        style:
+                            theme.textTheme.bodySmall?.copyWith(color: muted),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -325,12 +349,24 @@ class _CustomersPageState extends ConsumerState<CustomersPage> {
         ),
         AppColumn<Customer>(
           label: 'Location',
-          flex: 3,
+          flex: 2,
           cell: (context, c) => Text(
             c.locationLabel.isEmpty ? '—' : c.locationLabel,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
+        ),
+        AppColumn<Customer>(
+          label: 'Owes',
+          flex: 2,
+          alignment: Alignment.centerRight,
+          cell: (context, c) {
+            final owed = balances[c.id] ?? 0;
+            return Text(
+              owed == 0 ? '—' : formatPaise(owed),
+              style: TextStyle(color: owed == 0 ? null : AppColors.warning),
+            );
+          },
         ),
         AppColumn<Customer>(
           label: 'Credit limit',
@@ -345,6 +381,7 @@ class _CustomersPageState extends ConsumerState<CustomersPage> {
       ],
       trailing: (context, c) => CustomerMenu(
         customer: c,
+        onOpen: () => _open(c),
         onEdit: () => _edit(c),
         onToggleArchive: () => _toggleArchive(c),
       ),
