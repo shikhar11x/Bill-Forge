@@ -6,6 +6,7 @@ import 'package:billforge/features/customers/data/customers_table.dart';
 import 'package:billforge/features/inventory/data/purchases_table.dart';
 import 'package:billforge/features/inventory/data/stock_movements_table.dart';
 import 'package:billforge/features/inventory/data/suppliers_table.dart';
+import 'package:billforge/features/payments/data/customer_payments_table.dart';
 import 'package:billforge/features/products/data/categories_table.dart';
 import 'package:billforge/features/products/data/products_table.dart';
 import 'package:billforge/features/shop/data/shop_profiles_table.dart';
@@ -21,6 +22,7 @@ part 'app_database.g.dart';
     Invoices,
     InvoiceItems,
     InvoicePayments,
+    CustomerPayments,
     Suppliers,
     Purchases,
     PurchaseItems,
@@ -28,45 +30,46 @@ part 'app_database.g.dart';
   ],
 )
 class AppDatabase extends _$AppDatabase {
-  AppDatabase([QueryExecutor? executor]) : super(executor ?? _openConnection());
+  AppDatabase([QueryExecutor? executor])
+      : super(executor ?? _openConnection());
 
   @override
-  int get schemaVersion => 5;
+  int get schemaVersion => 6;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
-    onCreate: (m) => m.createAll(),
-    onUpgrade: (m, from, to) async {
-      if (from < 2) {
-        await m.createTable(categories);
-        await m.createTable(products);
-        await _createIndexes(m, 'products_');
-      }
-      if (from < 3) {
-        await m.createTable(customers);
-        await _createIndexes(m, 'customers_');
-      }
-      if (from < 4) {
-        await m.createTable(invoices);
-        await m.createTable(invoiceItems);
-        await m.createTable(invoicePayments);
-        await _createIndexes(m, 'invoices_');
-        await _createIndexes(m, 'invoice_items_');
-        await _createIndexes(m, 'invoice_payments_');
-      }
-      if (from < 5) {
-        await m.createTable(suppliers);
-        await m.createTable(purchases);
-        await m.createTable(purchaseItems);
-        await m.createTable(stockMovements);
-        await _createIndexes(m, 'suppliers_');
-        await _createIndexes(m, 'purchases_');
-        await _createIndexes(m, 'purchase_items_');
-        await _createIndexes(m, 'stock_movements_');
+        onCreate: (m) => m.createAll(),
+        onUpgrade: (m, from, to) async {
+          if (from < 2) {
+            await m.createTable(categories);
+            await m.createTable(products);
+            await _createIndexes(m, 'products_');
+          }
+          if (from < 3) {
+            await m.createTable(customers);
+            await _createIndexes(m, 'customers_');
+          }
+          if (from < 4) {
+            await m.createTable(invoices);
+            await m.createTable(invoiceItems);
+            await m.createTable(invoicePayments);
+            await _createIndexes(m, 'invoices_');
+            await _createIndexes(m, 'invoice_items_');
+            await _createIndexes(m, 'invoice_payments_');
+          }
+          if (from < 5) {
+            await m.createTable(suppliers);
+            await m.createTable(purchases);
+            await m.createTable(purchaseItems);
+            await m.createTable(stockMovements);
+            await _createIndexes(m, 'suppliers_');
+            await _createIndexes(m, 'purchases_');
+            await _createIndexes(m, 'purchase_items_');
+            await _createIndexes(m, 'stock_movements_');
 
-        // Stock that exists today becomes each product's opening balance,
-        // so the ledger adds up to the stock figure from day one.
-        await customStatement('''
+            // Stock that exists today becomes each product's opening balance,
+            // so the ledger adds up to the stock figure from day one.
+            await customStatement('''
               INSERT INTO stock_movements
                 (id, product_id, type, qty_milli, balance_after_milli, reason,
                  note, ref_type, ref_id, created_at)
@@ -76,29 +79,40 @@ class AppDatabase extends _$AppDatabase {
               FROM products
               WHERE track_stock = 1 AND stock_milli != 0
             ''');
-      }
-    },
-    beforeOpen: (details) async {
-      await customStatement('PRAGMA foreign_keys = ON');
-    },
-  );
+          }
+          if (from < 6) {
+            await m.createTable(customerPayments);
+            await _createIndexes(m, 'customer_payments_');
+            // When invoices were created in this same upgrade (from < 4) the
+            // tables already have these columns, so only add them to tables
+            // that existed before.
+            if (from >= 4) {
+              await m.addColumn(invoices, invoices.dueDate);
+              await m.addColumn(invoicePayments, invoicePayments.receiptId);
+            }
+          }
+        },
+        beforeOpen: (details) async {
+          await customStatement('PRAGMA foreign_keys = ON');
+        },
+      );
 
   /// Creates only the indexes of one table, so each migration step stays
   /// independent of tables added in later versions.
   Future<void> _createIndexes(Migrator m, String prefix) async {
-    final indexes = allSchemaEntities.whereType<Index>().where(
-      (i) => i.entityName.startsWith(prefix),
-    );
+    final indexes = allSchemaEntities
+        .whereType<Index>()
+        .where((i) => i.entityName.startsWith(prefix));
     for (final index in indexes) {
       await m.create(index);
     }
   }
 
   static QueryExecutor _openConnection() => driftDatabase(
-    name: 'billforge',
-    web: DriftWebOptions(
-      sqlite3Wasm: Uri.parse('sqlite3.wasm'),
-      driftWorker: Uri.parse('drift_worker.js'),
-    ),
-  );
+        name: 'billforge',
+        web: DriftWebOptions(
+          sqlite3Wasm: Uri.parse('sqlite3.wasm'),
+          driftWorker: Uri.parse('drift_worker.js'),
+        ),
+      );
 }
