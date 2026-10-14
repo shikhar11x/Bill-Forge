@@ -2,10 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:billforge/features/inventory/presentation/inventory_page.dart';
-import 'package:billforge/features/inventory/presentation/purchase_detail_page.dart';
-import 'package:billforge/features/inventory/presentation/purchase_form_page.dart';
-import 'package:billforge/features/inventory/presentation/stock_history_page.dart';
+
 import 'package:billforge/app/router/app_routes.dart';
 import 'package:billforge/app/router/not_found_page.dart';
 import 'package:billforge/app/shell/app_shell.dart';
@@ -21,6 +18,13 @@ import 'package:billforge/features/billing/presentation/pos_page.dart';
 import 'package:billforge/features/customers/presentation/customer_form_page.dart';
 import 'package:billforge/features/customers/presentation/customers_page.dart';
 import 'package:billforge/features/dashboard/presentation/dashboard_page.dart';
+import 'package:billforge/features/inventory/presentation/inventory_page.dart';
+import 'package:billforge/features/inventory/presentation/purchase_detail_page.dart';
+import 'package:billforge/features/inventory/presentation/purchase_form_page.dart';
+import 'package:billforge/features/inventory/presentation/stock_history_page.dart';
+import 'package:billforge/features/payments/presentation/customer_account_page.dart';
+import 'package:billforge/features/payments/presentation/customer_statement_page.dart';
+import 'package:billforge/features/payments/presentation/outstanding_page.dart';
 import 'package:billforge/features/products/presentation/product_form_page.dart';
 import 'package:billforge/features/products/presentation/products_page.dart';
 import 'package:billforge/features/settings/presentation/settings_page.dart';
@@ -33,9 +37,9 @@ Page<void> _noTransition(GoRouterState state, Widget child) =>
     NoTransitionPage<void>(key: state.pageKey, child: child);
 
 GoRoute _shellRoute(String path, Widget child) => GoRoute(
-  path: path,
-  pageBuilder: (context, state) => _noTransition(state, child),
-);
+      path: path,
+      pageBuilder: (context, state) => _noTransition(state, child),
+    );
 
 final routerProvider = Provider<GoRouter>((ref) {
   final refresh = ValueNotifier<int>(0);
@@ -173,10 +177,16 @@ final routerProvider = Provider<GoRouter>((ref) {
             pageBuilder: (context, state) =>
                 _noTransition(state, const CustomersPage()),
             routes: [
+              // Static paths ('new', 'outstanding') must stay above ':id'.
               GoRoute(
                 path: 'new',
                 pageBuilder: (context, state) =>
                     _noTransition(state, const CustomerFormPage()),
+              ),
+              GoRoute(
+                path: 'outstanding',
+                pageBuilder: (context, state) =>
+                    _noTransition(state, const OutstandingPage()),
               ),
               GoRoute(
                 path: ':id/edit',
@@ -185,6 +195,26 @@ final routerProvider = Provider<GoRouter>((ref) {
                   return _noTransition(
                     state,
                     CustomerFormPage(key: ValueKey(id), customerId: id),
+                  );
+                },
+              ),
+              GoRoute(
+                path: ':id/statement',
+                pageBuilder: (context, state) {
+                  final id = state.pathParameters['id']!;
+                  return _noTransition(
+                    state,
+                    CustomerStatementPage(key: ValueKey(id), customerId: id),
+                  );
+                },
+              ),
+              GoRoute(
+                path: ':id',
+                pageBuilder: (context, state) {
+                  final id = state.pathParameters['id']!;
+                  return _noTransition(
+                    state,
+                    CustomerAccountPage(key: ValueKey(id), customerId: id),
                   );
                 },
               ),

@@ -15,11 +15,15 @@ abstract final class AppRoutes {
   static String productEdit(String id) => '/products/$id/edit';
   static const customers = '/customers';
   static const customerNew = '/customers/new';
+  static const customerOutstanding = '/customers/outstanding';
+  static String customerAccount(String id) => '/customers/$id';
   static String customerEdit(String id) => '/customers/$id/edit';
+  static String customerStatement(String id) => '/customers/$id/statement';
   static const inventory = '/inventory';
   static const purchaseNew = '/inventory/purchases/new';
   static String purchase(String id) => '/inventory/purchases/$id';
-  static String stockHistory(String productId) => '/inventory/stock/$productId';
+  static String stockHistory(String productId) =>
+      '/inventory/stock/$productId';
   static const reports = '/reports';
   static const settings = '/settings';
 }
