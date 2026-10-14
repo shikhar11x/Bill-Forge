@@ -13,7 +13,13 @@ abstract interface class InvoiceRepository {
 
   Future<void> deleteDraft(String id);
 
-  /// Atomically: assigns the next invoice number, stores the invoice with its
-  /// payments, and deducts stock. Throws `ConflictFailure` on invalid payments.
-  Future<Invoice> issue(InvoiceDetail draft, List<PaymentEntry> payments);
+  /// Atomically: checks the customer's credit limit, assigns the next invoice
+  /// number, stores the invoice with its payments, and deducts stock.
+  /// [dueDate] applies only when part of the bill is left on credit.
+  /// Throws `ConflictFailure` on invalid payments or a credit limit breach.
+  Future<Invoice> issue(
+    InvoiceDetail draft,
+    List<PaymentEntry> payments, {
+    DateTime? dueDate,
+  });
 }

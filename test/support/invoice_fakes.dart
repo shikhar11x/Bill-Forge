@@ -11,35 +11,38 @@ Invoice sampleInvoice({
   String? customerName,
   int grandTotalPaise = 10000,
   int paidPaise = 10000,
-}) => Invoice(
-  id: id,
-  invoiceNumber: number,
-  status: status,
-  customerName: customerName,
-  placeOfSupply: 'Haryana',
-  isInterState: false,
-  pricesIncludeTax: true,
-  discountPaise: 0,
-  taxablePaise: grandTotalPaise,
-  cgstPaise: 0,
-  sgstPaise: 0,
-  igstPaise: 0,
-  roundOffPaise: 0,
-  grandTotalPaise: grandTotalPaise,
-  paidPaise: paidPaise,
-  issuedAt: status == InvoiceStatus.issued ? DateTime(2026, 6, 1, 14, 5) : null,
-  createdAt: DateTime(2026, 6, 1),
-  updatedAt: DateTime(2026, 6, 1, 14, 5),
-);
+}) =>
+    Invoice(
+      id: id,
+      invoiceNumber: number,
+      status: status,
+      customerName: customerName,
+      placeOfSupply: 'Haryana',
+      isInterState: false,
+      pricesIncludeTax: true,
+      discountPaise: 0,
+      taxablePaise: grandTotalPaise,
+      cgstPaise: 0,
+      sgstPaise: 0,
+      igstPaise: 0,
+      roundOffPaise: 0,
+      grandTotalPaise: grandTotalPaise,
+      paidPaise: paidPaise,
+      issuedAt:
+          status == InvoiceStatus.issued ? DateTime(2026, 6, 1, 14, 5) : null,
+      createdAt: DateTime(2026, 6, 1),
+      updatedAt: DateTime(2026, 6, 1, 14, 5),
+    );
 
 class FakeInvoiceRepository implements InvoiceRepository {
   FakeInvoiceRepository([List<Invoice> invoices = const []])
-    : _invoices = List.of(invoices);
+      : _invoices = List.of(invoices);
 
   final List<Invoice> _invoices;
   InvoiceDetail? lastDraft;
   InvoiceDetail? lastIssued;
   List<PaymentEntry>? lastPayments;
+  DateTime? lastDueDate;
 
   @override
   Stream<List<Invoice>> watchInvoices(InvoiceQuery query) {
@@ -78,16 +81,18 @@ class FakeInvoiceRepository implements InvoiceRepository {
   @override
   Future<Invoice> issue(
     InvoiceDetail draft,
-    List<PaymentEntry> payments,
-  ) async {
+    List<PaymentEntry> payments, {
+    DateTime? dueDate,
+  }) async {
     lastIssued = draft;
     lastPayments = payments;
+    lastDueDate = dueDate;
     return draft.invoice.copyWith(
       invoiceNumber: 'INV-0001',
       status: InvoiceStatus.issued,
       paidPaise: payments.fold<int>(0, (s, p) => s + p.amountPaise),
+      dueDate: dueDate,
       issuedAt: DateTime(2026, 6, 1),
-      billDiscount: draft.invoice.billDiscount,
     );
   }
 }

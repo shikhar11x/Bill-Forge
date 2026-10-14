@@ -1,6 +1,7 @@
 import 'package:drift/drift.dart';
 
 import 'package:billforge/features/customers/data/customers_table.dart';
+import 'package:billforge/features/payments/data/customer_payments_table.dart';
 import 'package:billforge/features/products/data/products_table.dart';
 
 @DataClassName('InvoiceRow')
@@ -11,7 +12,8 @@ class Invoices extends Table {
   TextColumn get id => text()();
   TextColumn get invoiceNumber => text().nullable()();
   TextColumn get status => text()();
-  TextColumn get customerId => text().nullable().references(Customers, #id)();
+  TextColumn get customerId =>
+      text().nullable().references(Customers, #id)();
   TextColumn get customerName => text().nullable()();
   TextColumn get customerPhone => text().nullable()();
   TextColumn get customerGstin => text().nullable()();
@@ -28,6 +30,7 @@ class Invoices extends Table {
   IntColumn get roundOffPaise => integer()();
   IntColumn get grandTotalPaise => integer()();
   IntColumn get paidPaise => integer().withDefault(const Constant(0))();
+  DateTimeColumn get dueDate => dateTime().nullable()();
   DateTimeColumn get issuedAt => dateTime().nullable()();
   DateTimeColumn get createdAt => dateTime()();
   DateTimeColumn get updatedAt => dateTime()();
@@ -38,8 +41,8 @@ class Invoices extends Table {
   /// Drafts have no number (NULL), so many drafts can coexist.
   @override
   List<Set<Column<Object>>> get uniqueKeys => [
-    {invoiceNumber},
-  ];
+        {invoiceNumber},
+      ];
 }
 
 @DataClassName('InvoiceItemRow')
@@ -49,7 +52,8 @@ class InvoiceItems extends Table {
   TextColumn get invoiceId =>
       text().references(Invoices, #id, onDelete: KeyAction.cascade)();
   IntColumn get position => integer()();
-  TextColumn get productId => text().nullable().references(Products, #id)();
+  TextColumn get productId =>
+      text().nullable().references(Products, #id)();
   TextColumn get name => text()();
   TextColumn get hsnCode => text().nullable()();
   TextColumn get unit => text()();
@@ -78,6 +82,11 @@ class InvoicePayments extends Table {
   TextColumn get method => text()();
   IntColumn get amountPaise => integer()();
   DateTimeColumn get paidAt => dateTime()();
+
+  /// Set when this row is part of a receipt collected later; null for money
+  /// taken at the counter when the bill was issued.
+  TextColumn get receiptId =>
+      text().nullable().references(CustomerPayments, #id)();
 
   @override
   Set<Column<Object>> get primaryKey => {id};

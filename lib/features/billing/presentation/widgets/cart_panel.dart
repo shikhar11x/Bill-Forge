@@ -25,6 +25,8 @@ import 'package:billforge/features/billing/presentation/widgets/line_edit_dialog
 import 'package:billforge/features/billing/presentation/widgets/payment_dialog.dart';
 import 'package:billforge/features/billing/presentation/widgets/totals_block.dart';
 import 'package:billforge/features/customers/domain/customer.dart';
+import 'package:billforge/features/payments/application/payment_providers.dart';
+import 'package:billforge/features/payments/domain/credit_check.dart';
 
 class CartPanel extends ConsumerStatefulWidget {
   const CartPanel({super.key});
@@ -101,19 +103,29 @@ class _CartPanelState extends ConsumerState<CartPanel> {
     final bill = ref.read(billControllerProvider);
     if (bill.isEmpty || _busy) return;
     final totals = ref.read(billTotalsProvider);
+    final customer = bill.customer;
 
-    final payments = await PaymentDialog.show(
+    final result = await PaymentDialog.show(
       context,
       totalPaise: totals.grandTotalPaise,
-      hasCustomer: bill.customer != null,
+      hasCustomer: customer != null,
+      credit: customer == null
+          ? null
+          : CreditContext(
+              limitPaise: customer.creditLimitPaise,
+              outstandingPaise:
+                  ref.read(customerBalancesProvider)[customer.id] ?? 0,
+            ),
     );
-    if (payments == null || !mounted) return;
+    if (result == null || !mounted) return;
 
     setState(() => _busy = true);
     try {
-      final issued = await ref
-          .read(invoiceRepositoryProvider)
-          .issue(_compose(bill), payments);
+      final issued = await ref.read(invoiceRepositoryProvider).issue(
+            _compose(bill),
+            result.entries,
+            dueDate: result.dueDate,
+          );
       _controller.clear();
       if (!mounted) return;
       AppToast.show(

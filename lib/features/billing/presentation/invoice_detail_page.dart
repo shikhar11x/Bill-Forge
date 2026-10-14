@@ -23,6 +23,10 @@ import 'package:billforge/features/billing/domain/invoice_document.dart';
 import 'package:billforge/features/billing/presentation/widgets/invoice_list_items.dart';
 import 'package:billforge/features/billing/presentation/widgets/share_invoice_dialog.dart';
 import 'package:billforge/features/billing/presentation/widgets/totals_block.dart';
+import 'package:billforge/features/customers/application/customer_providers.dart';
+import 'package:billforge/features/payments/application/payment_providers.dart';
+import 'package:billforge/features/payments/domain/outstanding.dart';
+import 'package:billforge/features/payments/presentation/widgets/collect_payment_dialog.dart';
 import 'package:billforge/features/shop/application/shop_providers.dart';
 
 class InvoiceDetailPage extends ConsumerWidget {
@@ -32,9 +36,7 @@ class InvoiceDetailPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return ref
-        .watch(invoiceDetailProvider(invoiceId))
-        .when(
+    return ref.watch(invoiceDetailProvider(invoiceId)).when(
           loading: () =>
               const Center(child: CircularProgressIndicator(strokeWidth: 2)),
           error: (error, stack) => AppErrorState(
@@ -77,6 +79,33 @@ class _DetailView extends ConsumerWidget {
     }
   }
 
+  Future<void> _collect(BuildContext context, WidgetRef ref) async {
+    final customerId = detail.invoice.customerId;
+    if (customerId == null) return;
+    final customer =
+        await ref.read(customerRepositoryProvider).getById(customerId);
+    if (customer == null || !context.mounted) {
+      if (context.mounted) {
+        AppToast.show(context, 'Customer not found.', type: ToastType.error);
+      }
+      return;
+    }
+    final open = await ref
+        .read(paymentRepositoryProvider)
+        .watchOpenInvoicesFor(customerId)
+        .first;
+    if (!context.mounted) return;
+    final recorded = await CollectPaymentDialog.show(
+      context,
+      customer: customer,
+      openInvoices: open,
+      invoiceId: detail.invoice.id,
+    );
+    if (recorded == true && context.mounted) {
+      AppToast.show(context, 'Payment recorded', type: ToastType.success);
+    }
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
@@ -84,14 +113,15 @@ class _DetailView extends ConsumerWidget {
     final invoice = detail.invoice;
     final shop = shopOrNull(ref.watch(shopProfileProvider));
     final compact = MediaQuery.sizeOf(context).width < 600;
+    final now = DateTime.now();
 
     void openPrint() => context.go(AppRoutes.invoicePreview(invoice.id));
-    VoidCallback? openShare = shop == null
+    final VoidCallback? openShare = shop == null
         ? null
         : () => ShareInvoiceDialog.show(
-            context,
-            InvoiceDocument(shop: shop, detail: detail),
-          );
+              context,
+              InvoiceDocument(shop: shop, detail: detail),
+            );
 
     final rows = buildTotalsRows(
       discountPaise: invoice.discountPaise,
@@ -101,6 +131,14 @@ class _DetailView extends ConsumerWidget {
       igstPaise: invoice.igstPaise,
       roundOffPaise: invoice.roundOffPaise,
     );
+
+    final dueDate = invoice.dueDate;
+    final overdue = isOverdue(invoice, now);
+    final dueText = dueDate == null
+        ? null
+        : overdue
+            ? 'Due ${formatDate(dueDate)} · overdue by ${daysOverdue(invoice, now)} day${daysOverdue(invoice, now) == 1 ? '' : 's'}'
+            : 'Due ${formatDate(dueDate)}';
 
     return PageContainer(
       child: ConstrainedBox(
@@ -196,6 +234,39 @@ class _DetailView extends ConsumerWidget {
                       label: 'Continue editing',
                       onPressed: () => _continueEditing(context, ref),
                     ),
+                  ],
+                ),
+              ),
+            if (!invoice.isDraft && invoice.duePaise > 0)
+              AppCard(
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Balance due ${formatPaise(invoice.duePaise)}',
+                            style: theme.textTheme.titleSmall?.copyWith(
+                              color: AppColors.warning,
+                            ),
+                          ),
+                          if (dueText != null)
+                            Text(
+                              dueText,
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: overdue ? AppColors.danger : muted,
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
+                    if (invoice.customerId != null)
+                      AppButton(
+                        label: 'Collect payment',
+                        icon: Icons.payments_outlined,
+                        onPressed: () => _collect(context, ref),
+                      ),
                   ],
                 ),
               ),

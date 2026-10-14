@@ -44,6 +44,9 @@ abstract class Invoice with _$Invoice {
     required int roundOffPaise,
     required int grandTotalPaise,
     @Default(0) int paidPaise,
+
+    /// When the unpaid balance is expected. Only set for credit sales.
+    DateTime? dueDate,
     DateTime? issuedAt,
     required DateTime createdAt,
     required DateTime updatedAt,
@@ -92,6 +95,10 @@ abstract class InvoicePayment with _$InvoicePayment {
     required PaymentMethod method,
     required int amountPaise,
     required DateTime paidAt,
+
+    /// The receipt this payment belongs to, when it was collected after the
+    /// sale. Null for money taken when the bill was issued.
+    String? receiptId,
   }) = _InvoicePayment;
 }
 

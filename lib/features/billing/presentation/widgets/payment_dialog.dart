@@ -3,40 +3,60 @@ import 'package:flutter/services.dart';
 
 import 'package:billforge/app/theme/app_colors.dart';
 import 'package:billforge/app/theme/app_spacing.dart';
+import 'package:billforge/core/utils/date_format.dart';
 import 'package:billforge/core/utils/formatters.dart';
 import 'package:billforge/core/utils/money.dart';
 import 'package:billforge/core/widgets/app_button.dart';
 import 'package:billforge/features/billing/domain/payment_method.dart';
+import 'package:billforge/features/payments/domain/credit_check.dart';
 
 class _PaymentRow {
   _PaymentRow(this.method, String amount)
-    : controller = TextEditingController(text: amount);
+      : controller = TextEditingController(text: amount);
 
   PaymentMethod method;
   final TextEditingController controller;
 }
 
+/// What the cashier agreed: the payments taken now and, if part of the bill
+/// stays on credit, when it is due.
+class PaymentResult {
+  const PaymentResult({required this.entries, this.dueDate});
+
+  final List<PaymentEntry> entries;
+  final DateTime? dueDate;
+}
+
 /// Collects how the bill is paid. Anything left unpaid becomes credit.
-/// Returns the payments (possibly none), or null if cancelled.
+/// Returns the result, or null if cancelled.
 class PaymentDialog extends StatefulWidget {
   const PaymentDialog({
     required this.totalPaise,
     required this.hasCustomer,
+    this.credit,
     super.key,
   });
 
   final int totalPaise;
   final bool hasCustomer;
 
-  static Future<List<PaymentEntry>?> show(
+  /// The selected customer's limit and current balance, when there is one.
+  final CreditContext? credit;
+
+  static Future<PaymentResult?> show(
     BuildContext context, {
     required int totalPaise,
     required bool hasCustomer,
-  }) => showDialog<List<PaymentEntry>>(
-    context: context,
-    builder: (_) =>
-        PaymentDialog(totalPaise: totalPaise, hasCustomer: hasCustomer),
-  );
+    CreditContext? credit,
+  }) =>
+      showDialog<PaymentResult>(
+        context: context,
+        builder: (_) => PaymentDialog(
+          totalPaise: totalPaise,
+          hasCustomer: hasCustomer,
+          credit: credit,
+        ),
+      );
 
   @override
   State<PaymentDialog> createState() => _PaymentDialogState();
@@ -47,6 +67,7 @@ class _PaymentDialogState extends State<PaymentDialog> {
     if (widget.totalPaise > 0)
       _PaymentRow(PaymentMethod.cash, paiseToInput(widget.totalPaise)),
   ];
+  DateTime? _dueDate;
 
   @override
   void dispose() {
@@ -54,6 +75,11 @@ class _PaymentDialogState extends State<PaymentDialog> {
       row.controller.dispose();
     }
     super.dispose();
+  }
+
+  DateTime _inDays(int days) {
+    final now = DateTime.now();
+    return DateTime(now.year, now.month, now.day + days);
   }
 
   ({List<PaymentEntry> entries, bool invalid}) _read() {
@@ -97,6 +123,19 @@ class _PaymentDialogState extends State<PaymentDialog> {
     row.controller.dispose();
   }
 
+  Future<void> _pickDate() async {
+    final today = _inDays(0);
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: _dueDate ?? _inDays(7),
+      firstDate: today,
+      lastDate: _inDays(3650),
+    );
+    if (picked != null) {
+      setState(() => _dueDate = DateTime(picked.year, picked.month, picked.day));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -105,6 +144,20 @@ class _PaymentDialogState extends State<PaymentDialog> {
     final problem = _problem(read);
     final paid = read.entries.fold<int>(0, (s, e) => s + e.amountPaise);
     final due = widget.totalPaise - paid;
+
+    final credit = widget.credit;
+    final check = (due > 0 && credit != null && credit.limitPaise != null)
+        ? checkCredit(
+            limitPaise: credit.limitPaise,
+            outstandingPaise: credit.outstandingPaise,
+            newDuePaise: due,
+          )
+        : null;
+    final creditBlocked = check != null && !check.allowed;
+
+    final presets = [7, 15, 30];
+    final customDate = _dueDate != null &&
+        !presets.any((days) => _dueDate == _inDays(days));
 
     return AlertDialog(
       title: const Text('Take payment'),
@@ -199,6 +252,49 @@ class _PaymentDialogState extends State<PaymentDialog> {
                   value: formatPaise(due),
                   color: AppColors.warning,
                 ),
+              if (due > 0 && widget.hasCustomer) ...[
+                const SizedBox(height: AppSpacing.md),
+                Text('Due date', style: theme.textTheme.labelLarge),
+                const SizedBox(height: AppSpacing.sm),
+                Wrap(
+                  spacing: AppSpacing.sm,
+                  runSpacing: AppSpacing.sm,
+                  children: [
+                    ChoiceChip(
+                      label: const Text('No due date'),
+                      selected: _dueDate == null,
+                      onSelected: (_) => setState(() => _dueDate = null),
+                    ),
+                    for (final days in presets)
+                      ChoiceChip(
+                        label: Text('$days days'),
+                        selected: _dueDate == _inDays(days),
+                        onSelected: (_) =>
+                            setState(() => _dueDate = _inDays(days)),
+                      ),
+                    ActionChip(
+                      avatar: const Icon(Icons.event_outlined, size: 16),
+                      label: Text(
+                        customDate ? formatDate(_dueDate!) : 'Pick date',
+                      ),
+                      onPressed: _pickDate,
+                    ),
+                  ],
+                ),
+              ],
+              if (check != null) ...[
+                const SizedBox(height: AppSpacing.md),
+                Text(
+                  creditBlocked
+                      ? creditLimitMessage(check)
+                      : 'Credit limit ${formatPaise(check.limitPaise!)}: owes '
+                          '${formatPaise(check.outstandingPaise)}, '
+                          '${formatPaise(check.afterPaise)} after this bill.',
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: creditBlocked ? AppColors.danger : muted,
+                  ),
+                ),
+              ],
               if (problem != null)
                 Padding(
                   padding: const EdgeInsets.only(top: AppSpacing.sm),
@@ -220,8 +316,13 @@ class _PaymentDialogState extends State<PaymentDialog> {
         ),
         AppButton(
           label: 'Save & issue',
-          onPressed: problem == null
-              ? () => Navigator.of(context).pop(read.entries)
+          onPressed: (problem == null && !creditBlocked)
+              ? () => Navigator.of(context).pop(
+                    PaymentResult(
+                      entries: read.entries,
+                      dueDate: due > 0 ? _dueDate : null,
+                    ),
+                  )
               : null,
         ),
       ],

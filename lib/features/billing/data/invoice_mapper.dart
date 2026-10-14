@@ -30,6 +30,7 @@ Invoice invoiceFromRow(InvoiceRow r) => Invoice(
   grandTotalPaise: r.grandTotalPaise,
   paidPaise: r.paidPaise,
   issuedAt: r.issuedAt,
+  dueDate: r.dueDate,
   createdAt: r.createdAt,
   updatedAt: r.updatedAt,
 );
@@ -56,6 +57,7 @@ InvoicesCompanion invoiceToCompanion(Invoice i) => InvoicesCompanion(
   grandTotalPaise: Value(i.grandTotalPaise),
   paidPaise: Value(i.paidPaise),
   issuedAt: Value(i.issuedAt),
+  dueDate: Value(i.dueDate),
   createdAt: Value(i.createdAt),
   updatedAt: Value(i.updatedAt),
 );
@@ -107,4 +109,5 @@ InvoicePayment paymentFromRow(InvoicePaymentRow r) => InvoicePayment(
   method: PaymentMethod.fromName(r.method),
   amountPaise: r.amountPaise,
   paidAt: r.paidAt,
+  receiptId: r.receiptId,
 );
