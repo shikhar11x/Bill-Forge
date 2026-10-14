@@ -2,16 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:billforge/app/theme/app_spacing.dart';
+import 'package:billforge/core/utils/async_value_x.dart';
 import 'package:billforge/core/utils/formatters.dart';
 import 'package:billforge/core/widgets/app_card.dart';
 import 'package:billforge/core/widgets/app_empty_state.dart';
 import 'package:billforge/core/widgets/app_stat_card.dart';
 import 'package:billforge/core/widgets/page_container.dart';
 import 'package:billforge/features/auth/application/auth_controller.dart';
-import 'package:billforge/core/utils/async_value_x.dart';
 import 'package:billforge/features/inventory/application/inventory_providers.dart';
+import 'package:billforge/features/payments/application/payment_providers.dart';
 
-/// Layout shell only. Real numbers arrive with the billing/reports phases.
+/// Pending payments and low stock are live. Sales figures arrive with the
+/// reports phase.
 class DashboardPage extends ConsumerWidget {
   const DashboardPage({super.key});
 
@@ -54,10 +56,14 @@ class _StatGrid extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final lowStock = ref.watch(lowStockCountProvider).dataOrNull;
+    final pending = ref.watch(openInvoicesProvider).dataOrNull == null
+        ? null
+        : ref.watch(outstandingReportProvider).totalPaise;
+
     final stats = [
       AppStatCard(
         label: "Today's sales",
-        value: formatInr(0),
+        value: formatPaise(0),
         icon: Icons.trending_up_rounded,
       ),
       const AppStatCard(
@@ -67,7 +73,7 @@ class _StatGrid extends ConsumerWidget {
       ),
       AppStatCard(
         label: 'Pending payments',
-        value: formatInr(0),
+        value: pending == null ? '—' : formatPaise(pending),
         icon: Icons.schedule_rounded,
       ),
       AppStatCard(
@@ -101,8 +107,7 @@ class _Panels extends StatelessWidget {
       title: 'Sales overview',
       icon: Icons.show_chart_rounded,
       emptyTitle: 'No sales yet',
-      emptyMessage:
-          'Your sales trend will appear here once you create invoices.',
+      emptyMessage: 'Your sales trend will appear here once you create invoices.',
     );
     const recent = _Panel(
       title: 'Recent transactions',
@@ -124,11 +129,7 @@ class _Panels extends StatelessWidget {
           );
         }
         return const Column(
-          children: [
-            sales,
-            SizedBox(height: AppSpacing.lg),
-            recent,
-          ],
+          children: [sales, SizedBox(height: AppSpacing.lg), recent],
         );
       },
     );
