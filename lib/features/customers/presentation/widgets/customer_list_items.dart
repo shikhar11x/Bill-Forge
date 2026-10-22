@@ -128,10 +128,10 @@ class CustomerCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final muted = theme.colorScheme.onSurfaceVariant;
-    final subtitle = [customer.phone, customer.locationLabel]
-        .whereType<String>()
-        .where((s) => s.isNotEmpty)
-        .join(' · ');
+    final subtitle = [
+      customer.phone,
+      customer.locationLabel,
+    ].whereType<String>().where((s) => s.isNotEmpty).join(' · ');
     final limit = customer.creditLimitPaise;
 
     return AppCard(

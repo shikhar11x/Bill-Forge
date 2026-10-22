@@ -78,8 +78,7 @@ class _CustomersPageState extends ConsumerState<CustomersPage> {
       final confirmed = await AppDialog.confirm(
         context,
         title: 'Archive "${customer.name}"?',
-        message:
-            'They will be hidden from customer lists and billing. You can restore them from the Archived filter.',
+        message: 'They will be hidden from customer lists and billing. You can restore them from the Archived filter.',
         confirmLabel: 'Archive',
         destructive: true,
       );
@@ -200,8 +199,9 @@ class _CustomersPageState extends ConsumerState<CustomersPage> {
         return Align(
           alignment: Alignment.topCenter,
           child: ConstrainedBox(
-            constraints:
-                const BoxConstraints(maxWidth: AppLayout.contentMaxWidth),
+            constraints: const BoxConstraints(
+              maxWidth: AppLayout.contentMaxWidth,
+            ),
             child: Padding(
               padding: EdgeInsets.all(wide ? AppSpacing.xxl : AppSpacing.lg),
               child: Column(
@@ -331,8 +331,9 @@ class _CustomersPageState extends ConsumerState<CustomersPage> {
                     if (c.gstin != null)
                       Text(
                         c.gstin!,
-                        style:
-                            theme.textTheme.bodySmall?.copyWith(color: muted),
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: muted,
+                        ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
