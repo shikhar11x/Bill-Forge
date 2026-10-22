@@ -37,9 +37,9 @@ Page<void> _noTransition(GoRouterState state, Widget child) =>
     NoTransitionPage<void>(key: state.pageKey, child: child);
 
 GoRoute _shellRoute(String path, Widget child) => GoRoute(
-      path: path,
-      pageBuilder: (context, state) => _noTransition(state, child),
-    );
+  path: path,
+  pageBuilder: (context, state) => _noTransition(state, child),
+);
 
 final routerProvider = Provider<GoRouter>((ref) {
   final refresh = ValueNotifier<int>(0);
