@@ -16,30 +16,29 @@ Invoice sampleOpenInvoice({
   int paid = 0,
   DateTime? issuedAt,
   DateTime? dueDate,
-}) =>
-    Invoice(
-      id: id,
-      invoiceNumber: number,
-      status: InvoiceStatus.issued,
-      customerId: customerId,
-      customerName: customerName,
-      customerPhone: customerPhone,
-      placeOfSupply: 'Haryana',
-      isInterState: false,
-      pricesIncludeTax: true,
-      discountPaise: 0,
-      taxablePaise: total,
-      cgstPaise: 0,
-      sgstPaise: 0,
-      igstPaise: 0,
-      roundOffPaise: 0,
-      grandTotalPaise: total,
-      paidPaise: paid,
-      dueDate: dueDate,
-      issuedAt: issuedAt ?? DateTime(2026, 6, 1),
-      createdAt: DateTime(2026, 6, 1),
-      updatedAt: DateTime(2026, 6, 1),
-    );
+}) => Invoice(
+  id: id,
+  invoiceNumber: number,
+  status: InvoiceStatus.issued,
+  customerId: customerId,
+  customerName: customerName,
+  customerPhone: customerPhone,
+  placeOfSupply: 'Haryana',
+  isInterState: false,
+  pricesIncludeTax: true,
+  discountPaise: 0,
+  taxablePaise: total,
+  cgstPaise: 0,
+  sgstPaise: 0,
+  igstPaise: 0,
+  roundOffPaise: 0,
+  grandTotalPaise: total,
+  paidPaise: paid,
+  dueDate: dueDate,
+  issuedAt: issuedAt ?? DateTime(2026, 6, 1),
+  createdAt: DateTime(2026, 6, 1),
+  updatedAt: DateTime(2026, 6, 1),
+);
 
 CustomerPayment sampleReceipt({
   String id = 'r1',
@@ -48,16 +47,15 @@ CustomerPayment sampleReceipt({
   PaymentMethod method = PaymentMethod.upi,
   String? note,
   DateTime? receivedAt,
-}) =>
-    CustomerPayment(
-      id: id,
-      customerId: customerId,
-      method: method,
-      amountPaise: amountPaise,
-      note: note,
-      receivedAt: receivedAt ?? DateTime(2026, 6, 12),
-      createdAt: DateTime(2026, 6, 12),
-    );
+}) => CustomerPayment(
+  id: id,
+  customerId: customerId,
+  method: method,
+  amountPaise: amountPaise,
+  note: note,
+  receivedAt: receivedAt ?? DateTime(2026, 6, 12),
+  createdAt: DateTime(2026, 6, 12),
+);
 
 class CollectCall {
   const CollectCall({
@@ -93,22 +91,20 @@ class FakePaymentRepository implements PaymentRepository {
 
   @override
   Stream<List<Invoice>> watchOpenInvoicesFor(String customerId) => Stream.value(
-        openInvoices.where((i) => i.customerId == customerId).toList(),
-      );
+    openInvoices.where((i) => i.customerId == customerId).toList(),
+  );
 
   @override
   Stream<List<CustomerPayment>> watchReceipts(
     String customerId, {
     required int limit,
-  }) =>
-      Stream.value(
-        receipts.where((r) => r.customerId == customerId).take(limit).toList(),
-      );
+  }) => Stream.value(
+    receipts.where((r) => r.customerId == customerId).take(limit).toList(),
+  );
 
   @override
   Future<CustomerLedger> loadLedger(String customerId) async =>
-      ledger ??
-      const CustomerLedger(invoices: [], payments: [], receipts: []);
+      ledger ?? const CustomerLedger(invoices: [], payments: [], receipts: []);
 
   @override
   Future<CustomerPayment> collect({

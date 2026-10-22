@@ -4,6 +4,7 @@ import 'package:billforge/features/billing/domain/invoice.dart';
 import 'package:billforge/features/billing/domain/payment_method.dart';
 import 'package:billforge/features/payments/domain/customer_ledger.dart';
 import 'package:billforge/features/payments/domain/statement.dart';
+
 import '../../support/payment_fakes.dart';
 
 /// Invoice A: ₹1,000 on 1 Jun, ₹400 paid at the counter.
@@ -137,14 +138,14 @@ void main() {
   test('period presets and labels', () {
     final now = DateTime(2026, 6, 15, 10);
     expect(StatementPeriod.all.range(now), (null, null));
-    expect(
-      StatementPeriod.thisMonth.range(now),
-      (DateTime(2026, 6, 1), DateTime(2026, 6, 15)),
-    );
-    expect(
-      StatementPeriod.last30Days.range(now),
-      (DateTime(2026, 5, 17), DateTime(2026, 6, 15)),
-    );
+    expect(StatementPeriod.thisMonth.range(now), (
+      DateTime(2026, 6, 1),
+      DateTime(2026, 6, 15),
+    ));
+    expect(StatementPeriod.last30Days.range(now), (
+      DateTime(2026, 5, 17),
+      DateTime(2026, 6, 15),
+    ));
     expect(
       statementPeriodLabel(buildStatement(ledger: makeLedger())),
       'All transactions',

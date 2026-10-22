@@ -9,6 +9,7 @@ import 'package:billforge/features/payments/application/payment_providers.dart';
 import 'package:billforge/features/payments/domain/customer_payment.dart';
 import 'package:billforge/features/payments/presentation/customer_account_page.dart';
 import 'package:billforge/features/shop/application/shop_providers.dart';
+
 import '../../support/customer_fakes.dart';
 import '../../support/fakes.dart';
 import '../../support/payment_fakes.dart';
@@ -60,8 +61,9 @@ void main() {
     await tester.pumpAndSettle();
   }
 
-  testWidgets('shows balance, overdue amount and credit available',
-      (tester) async {
+  testWidgets('shows balance, overdue amount and credit available', (
+    tester,
+  ) async {
     await pumpPage(tester, invoices: open);
 
     expect(find.text('Rahul Sharma'), findsOneWidget);
@@ -92,8 +94,9 @@ void main() {
     expect(find.textContaining('Cheque'), findsOneWidget);
   });
 
-  testWidgets('a paid-up customer cannot be charged or reminded',
-      (tester) async {
+  testWidgets('a paid-up customer cannot be charged or reminded', (
+    tester,
+  ) async {
     await pumpPage(tester);
 
     expect(
@@ -103,16 +106,14 @@ void main() {
     expect(find.text('No payments collected yet.'), findsOneWidget);
 
     FilledButton buttonFor(String label) => tester.widget<FilledButton>(
-          find.ancestor(
-            of: find.text(label),
-            matching: find.byType(FilledButton),
-          ),
-        );
+      find.ancestor(of: find.text(label), matching: find.byType(FilledButton)),
+    );
     expect(buttonFor('Collect payment').onPressed, isNull);
   });
 
-  testWidgets('Collect payment opens the dialog for this customer',
-      (tester) async {
+  testWidgets('Collect payment opens the dialog for this customer', (
+    tester,
+  ) async {
     await pumpPage(tester, invoices: open);
     await tester.tap(find.text('Collect payment'));
     await tester.pumpAndSettle();

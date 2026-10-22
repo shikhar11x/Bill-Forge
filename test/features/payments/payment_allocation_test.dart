@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:billforge/features/payments/domain/payment_allocation.dart';
+
 import '../../support/payment_fakes.dart';
 
 void main() {
@@ -25,8 +26,8 @@ void main() {
   );
 
   Map<String, int> asMap(List<Allocation> list) => {
-        for (final x in list) x.invoiceId: x.amountPaise,
-      };
+    for (final x in list) x.invoiceId: x.amountPaise,
+  };
 
   group('allocatePayment', () {
     test('pays the oldest invoice in full before moving to the next', () {

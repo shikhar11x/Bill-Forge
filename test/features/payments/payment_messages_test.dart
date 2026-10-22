@@ -2,6 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:billforge/features/payments/domain/payment_messages.dart';
 import 'package:billforge/features/payments/domain/statement.dart';
+
 import '../../support/fakes.dart';
 import '../../support/payment_fakes.dart';
 import 'statement_test.dart' as fixture;
@@ -57,8 +58,14 @@ void main() {
       );
       expect(message, contains('• INV-0003 · 08 Jun 2026 · ₹200.00\n'));
       expect(message, contains('Total due: *₹1,500.00*'));
-      expect(message.indexOf('INV-0001'), lessThan(message.indexOf('INV-0002')));
-      expect(message.indexOf('INV-0002'), lessThan(message.indexOf('INV-0003')));
+      expect(
+        message.indexOf('INV-0001'),
+        lessThan(message.indexOf('INV-0002')),
+      );
+      expect(
+        message.indexOf('INV-0002'),
+        lessThan(message.indexOf('INV-0003')),
+      );
     });
 
     test('includes payment instructions only when the shop has them', () {

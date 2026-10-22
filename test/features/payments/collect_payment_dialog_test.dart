@@ -7,6 +7,7 @@ import 'package:billforge/core/errors/failure.dart';
 import 'package:billforge/features/billing/domain/payment_method.dart';
 import 'package:billforge/features/payments/application/payment_providers.dart';
 import 'package:billforge/features/payments/presentation/widgets/collect_payment_dialog.dart';
+
 import '../../support/customer_fakes.dart';
 import '../../support/payment_fakes.dart';
 
@@ -74,8 +75,9 @@ void main() {
     expect(find.text('1300.00'), findsOneWidget);
   });
 
-  testWidgets('a partial payment goes to the oldest invoices first',
-      (tester) async {
+  testWidgets('a partial payment goes to the oldest invoices first', (
+    tester,
+  ) async {
     await openDialog(tester);
     await tester.enterText(find.byType(TextFormField).first, '500');
     await tester.tap(find.text('Record payment'));
@@ -109,8 +111,9 @@ void main() {
     expect(repo.collected, isEmpty);
   });
 
-  testWidgets('a preselected invoice limits the amount and is sent along',
-      (tester) async {
+  testWidgets('a preselected invoice limits the amount and is sent along', (
+    tester,
+  ) async {
     await openDialog(tester, invoiceId: 'i2');
     expect(find.text('300.00'), findsOneWidget);
 
@@ -121,8 +124,9 @@ void main() {
     expect(repo.collected.single.amountPaise, 30000);
   });
 
-  testWidgets('choosing an invoice updates the suggested amount',
-      (tester) async {
+  testWidgets('choosing an invoice updates the suggested amount', (
+    tester,
+  ) async {
     await openDialog(tester);
     await tester.tap(find.byType(DropdownButtonFormField<String>));
     await tester.pumpAndSettle();
@@ -145,8 +149,9 @@ void main() {
     expect(repo.collected.single.method, PaymentMethod.upi);
   });
 
-  testWidgets('a repository conflict is shown inside the dialog',
-      (tester) async {
+  testWidgets('a repository conflict is shown inside the dialog', (
+    tester,
+  ) async {
     repo.failure = const ConflictFailure('This customer has nothing due.');
     await openDialog(tester);
     await tester.tap(find.text('Record payment'));

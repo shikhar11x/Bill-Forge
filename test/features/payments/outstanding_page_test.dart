@@ -8,6 +8,7 @@ import 'package:billforge/features/customers/application/customer_providers.dart
 import 'package:billforge/features/payments/application/payment_providers.dart';
 import 'package:billforge/features/payments/presentation/outstanding_page.dart';
 import 'package:billforge/features/shop/application/shop_providers.dart';
+
 import '../../support/customer_fakes.dart';
 import '../../support/fakes.dart';
 import '../../support/payment_fakes.dart';
@@ -51,10 +52,12 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
-          paymentRepositoryProvider
-              .overrideWithValue(FakePaymentRepository(openInvoices: open)),
-          customerRepositoryProvider
-              .overrideWithValue(FakeCustomerRepository([sampleCustomer()])),
+          paymentRepositoryProvider.overrideWithValue(
+            FakePaymentRepository(openInvoices: open),
+          ),
+          customerRepositoryProvider.overrideWithValue(
+            FakeCustomerRepository([sampleCustomer()]),
+          ),
           shopProfileProvider.overrideWith((ref) => Stream.value(sampleShop())),
         ],
         child: MaterialApp(
@@ -80,8 +83,9 @@ void main() {
     expect(find.text('₹200.00'), findsOneWidget);
   });
 
-  testWidgets('shows a cheerful empty state when nobody owes anything',
-      (tester) async {
+  testWidgets('shows a cheerful empty state when nobody owes anything', (
+    tester,
+  ) async {
     await pumpPage(tester);
     expect(find.text('No pending payments'), findsOneWidget);
   });
@@ -94,8 +98,9 @@ void main() {
     expect(find.textContaining('overdue'), findsOneWidget);
   });
 
-  testWidgets('Send reminder opens a message prefilled for that customer',
-      (tester) async {
+  testWidgets('Send reminder opens a message prefilled for that customer', (
+    tester,
+  ) async {
     await pumpPage(tester, open: invoices);
     await tester.tap(find.byTooltip('Send reminder').first);
     await tester.pumpAndSettle();
