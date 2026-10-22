@@ -34,19 +34,19 @@ final customerBalancesProvider = Provider<Map<String, int>>((ref) {
 
 final customerOpenInvoicesProvider = StreamProvider.autoDispose
     .family<List<Invoice>, String>(
-  (ref, customerId) =>
-      ref.watch(paymentRepositoryProvider).watchOpenInvoicesFor(customerId),
-);
+      (ref, customerId) =>
+          ref.watch(paymentRepositoryProvider).watchOpenInvoicesFor(customerId),
+    );
 
 final customerReceiptsProvider = StreamProvider.autoDispose
     .family<List<CustomerPayment>, String>(
-  (ref, customerId) => ref
-      .watch(paymentRepositoryProvider)
-      .watchReceipts(customerId, limit: 50),
-);
+      (ref, customerId) => ref
+          .watch(paymentRepositoryProvider)
+          .watchReceipts(customerId, limit: 50),
+    );
 
-final customerLedgerProvider =
-    FutureProvider.autoDispose.family<CustomerLedger, String>(
-  (ref, customerId) =>
-      ref.watch(paymentRepositoryProvider).loadLedger(customerId),
-);
+final customerLedgerProvider = FutureProvider.autoDispose
+    .family<CustomerLedger, String>(
+      (ref, customerId) =>
+          ref.watch(paymentRepositoryProvider).loadLedger(customerId),
+    );

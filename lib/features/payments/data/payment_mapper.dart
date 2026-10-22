@@ -5,14 +5,14 @@ import 'package:billforge/features/billing/domain/payment_method.dart';
 import 'package:billforge/features/payments/domain/customer_payment.dart';
 
 CustomerPayment receiptFromRow(CustomerPaymentRow r) => CustomerPayment(
-      id: r.id,
-      customerId: r.customerId,
-      method: PaymentMethod.fromName(r.method),
-      amountPaise: r.amountPaise,
-      note: r.note,
-      receivedAt: r.receivedAt,
-      createdAt: r.createdAt,
-    );
+  id: r.id,
+  customerId: r.customerId,
+  method: PaymentMethod.fromName(r.method),
+  amountPaise: r.amountPaise,
+  note: r.note,
+  receivedAt: r.receivedAt,
+  createdAt: r.createdAt,
+);
 
 CustomerPaymentsCompanion receiptToCompanion(CustomerPayment p) =>
     CustomerPaymentsCompanion(

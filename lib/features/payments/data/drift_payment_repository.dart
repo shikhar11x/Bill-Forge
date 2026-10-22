@@ -29,9 +29,9 @@ class DriftPaymentRepository implements PaymentRepository {
     final select = _db.select(_db.invoices)
       ..where(_open)
       ..orderBy([(t) => OrderingTerm.asc(t.issuedAt)]);
-    return select
-        .watch()
-        .map((rows) => rows.map(invoiceFromRow).toList(growable: false));
+    return select.watch().map(
+      (rows) => rows.map(invoiceFromRow).toList(growable: false),
+    );
   }
 
   @override
@@ -39,9 +39,9 @@ class DriftPaymentRepository implements PaymentRepository {
     final select = _db.select(_db.invoices)
       ..where((t) => _open(t) & t.customerId.equals(customerId))
       ..orderBy([(t) => OrderingTerm.asc(t.issuedAt)]);
-    return select
-        .watch()
-        .map((rows) => rows.map(invoiceFromRow).toList(growable: false));
+    return select.watch().map(
+      (rows) => rows.map(invoiceFromRow).toList(growable: false),
+    );
   }
 
   @override
@@ -54,41 +54,41 @@ class DriftPaymentRepository implements PaymentRepository {
       ..orderBy([
         (t) => OrderingTerm.desc(t.receivedAt),
         (t) => OrderingTerm(
-              expression: const CustomExpression<int>('rowid'),
-              mode: OrderingMode.desc,
-            ),
+          expression: const CustomExpression<int>('rowid'),
+          mode: OrderingMode.desc,
+        ),
       ])
       ..limit(limit);
-    return select
-        .watch()
-        .map((rows) => rows.map(receiptFromRow).toList(growable: false));
+    return select.watch().map(
+      (rows) => rows.map(receiptFromRow).toList(growable: false),
+    );
   }
 
   @override
   Future<CustomerLedger> loadLedger(String customerId) async {
-    final invoiceRows = await (_db.select(_db.invoices)
-          ..where(
-            (t) =>
-                t.customerId.equals(customerId) &
-                t.status.equals(InvoiceStatus.issued.name),
-          ))
-        .get();
+    final invoiceRows =
+        await (_db.select(_db.invoices)..where(
+              (t) =>
+                  t.customerId.equals(customerId) &
+                  t.status.equals(InvoiceStatus.issued.name),
+            ))
+            .get();
 
-    final paymentRows = await (_db.select(_db.invoicePayments).join([
-      innerJoin(
-        _db.invoices,
-        _db.invoices.id.equalsExp(_db.invoicePayments.invoiceId),
-      ),
-    ])
-          ..where(
-            _db.invoices.customerId.equals(customerId) &
-                _db.invoices.status.equals(InvoiceStatus.issued.name),
-          ))
-        .get();
+    final paymentRows =
+        await (_db.select(_db.invoicePayments).join([
+              innerJoin(
+                _db.invoices,
+                _db.invoices.id.equalsExp(_db.invoicePayments.invoiceId),
+              ),
+            ])..where(
+              _db.invoices.customerId.equals(customerId) &
+                  _db.invoices.status.equals(InvoiceStatus.issued.name),
+            ))
+            .get();
 
-    final receiptRows = await (_db.select(_db.customerPayments)
-          ..where((t) => t.customerId.equals(customerId)))
-        .get();
+    final receiptRows = await (_db.select(
+      _db.customerPayments,
+    )..where((t) => t.customerId.equals(customerId))).get();
 
     return CustomerLedger(
       invoices: invoiceRows.map(invoiceFromRow).toList(growable: false),
@@ -112,10 +112,11 @@ class DriftPaymentRepository implements PaymentRepository {
         throw const ConflictFailure('Enter an amount greater than zero.');
       }
 
-      final rows = await (_db.select(_db.invoices)
-            ..where((t) => _open(t) & t.customerId.equals(customerId))
-            ..orderBy([(t) => OrderingTerm.asc(t.issuedAt)]))
-          .get();
+      final rows =
+          await (_db.select(_db.invoices)
+                ..where((t) => _open(t) & t.customerId.equals(customerId))
+                ..orderBy([(t) => OrderingTerm.asc(t.issuedAt)]))
+              .get();
       var open = rows.map(invoiceFromRow).toList();
       if (invoiceId != null) {
         open = open.where((i) => i.id == invoiceId).toList();
@@ -146,13 +147,13 @@ class DriftPaymentRepository implements PaymentRepository {
         receivedAt: now,
         createdAt: now,
       );
-      await _db
-          .into(_db.customerPayments)
-          .insert(receiptToCompanion(receipt));
+      await _db.into(_db.customerPayments).insert(receiptToCompanion(receipt));
 
       for (final a in allocations) {
         final row = rows.firstWhere((r) => r.id == a.invoiceId);
-        await _db.into(_db.invoicePayments).insert(
+        await _db
+            .into(_db.invoicePayments)
+            .insert(
               InvoicePaymentsCompanion.insert(
                 id: newId('pay'),
                 invoiceId: a.invoiceId,
@@ -162,8 +163,9 @@ class DriftPaymentRepository implements PaymentRepository {
                 receiptId: Value(receipt.id),
               ),
             );
-        await (_db.update(_db.invoices)..where((t) => t.id.equals(a.invoiceId)))
-            .write(
+        await (_db.update(
+          _db.invoices,
+        )..where((t) => t.id.equals(a.invoiceId))).write(
           InvoicesCompanion(
             paidPaise: Value(row.paidPaise + a.amountPaise),
             updatedAt: Value(now),

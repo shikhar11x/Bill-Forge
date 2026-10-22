@@ -30,16 +30,15 @@ Future<Uint8List> buildStatementPdf({
     bool bold = false,
     PdfColor? color,
     pw.TextAlign align = pw.TextAlign.left,
-  }) =>
-      pw.Text(
-        value,
-        textAlign: align,
-        style: pw.TextStyle(
-          fontSize: size,
-          fontWeight: bold ? pw.FontWeight.bold : pw.FontWeight.normal,
-          color: color,
-        ),
-      );
+  }) => pw.Text(
+    value,
+    textAlign: align,
+    style: pw.TextStyle(
+      fontSize: size,
+      fontWeight: bold ? pw.FontWeight.bold : pw.FontWeight.normal,
+      color: color,
+    ),
+  );
 
   pw.Widget cell(String value, {bool right = false, bool bold = false}) =>
       pw.Padding(
