@@ -36,12 +36,11 @@ CreditCheck checkCredit({
   int? limitPaise,
   required int outstandingPaise,
   required int newDuePaise,
-}) =>
-    CreditCheck(
-      limitPaise: limitPaise,
-      outstandingPaise: outstandingPaise,
-      newDuePaise: newDuePaise,
-    );
+}) => CreditCheck(
+  limitPaise: limitPaise,
+  outstandingPaise: outstandingPaise,
+  newDuePaise: newDuePaise,
+);
 
 /// Only meaningful when [check] is not allowed.
 String creditLimitMessage(CreditCheck check) =>

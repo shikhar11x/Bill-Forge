@@ -13,8 +13,10 @@ String buildReminderMessage({
   required DateTime now,
   int maxInvoices = 6,
 }) {
-  final invoices = [...openInvoices]..sort(
-      (a, b) => (a.issuedAt ?? a.createdAt).compareTo(b.issuedAt ?? b.createdAt),
+  final invoices = [...openInvoices]
+    ..sort(
+      (a, b) =>
+          (a.issuedAt ?? a.createdAt).compareTo(b.issuedAt ?? b.createdAt),
     );
   final total = invoices.fold<int>(0, (s, i) => s + i.duePaise);
 

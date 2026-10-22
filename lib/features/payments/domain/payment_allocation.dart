@@ -13,9 +13,11 @@ class Allocation {
 List<Allocation> allocatePayment(int amountPaise, List<Invoice> openInvoices) {
   if (amountPaise <= 0) return const [];
 
-  final sorted = [...openInvoices]..sort((a, b) {
-      final byDate =
-          (a.issuedAt ?? a.createdAt).compareTo(b.issuedAt ?? b.createdAt);
+  final sorted = [...openInvoices]
+    ..sort((a, b) {
+      final byDate = (a.issuedAt ?? a.createdAt).compareTo(
+        b.issuedAt ?? b.createdAt,
+      );
       return byDate != 0
           ? byDate
           : (a.invoiceNumber ?? '').compareTo(b.invoiceNumber ?? '');

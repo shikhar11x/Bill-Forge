@@ -45,8 +45,11 @@ class OutstandingReport {
     required this.overduePaise,
   });
 
-  static const empty =
-      OutstandingReport(entries: [], totalPaise: 0, overduePaise: 0);
+  static const empty = OutstandingReport(
+    entries: [],
+    totalPaise: 0,
+    overduePaise: 0,
+  );
 
   /// Largest balance first.
   final List<OutstandingEntry> entries;

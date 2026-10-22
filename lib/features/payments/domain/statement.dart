@@ -59,9 +59,9 @@ enum StatementPeriod {
       StatementPeriod.all => (null, null),
       StatementPeriod.thisMonth => (DateTime(now.year, now.month, 1), today),
       StatementPeriod.last30Days => (
-          DateTime(now.year, now.month, now.day - 29),
-          today,
-        ),
+        DateTime(now.year, now.month, now.day - 29),
+        today,
+      ),
     };
   }
 }
@@ -106,50 +106,52 @@ Statement buildStatement({
     for (final i in ledger.invoices) i.id: i.invoiceNumber ?? 'Bill',
   };
 
-  final raw = <_Raw>[
-    for (final i in ledger.invoices)
-      _Raw(
-        date: i.issuedAt ?? i.createdAt,
-        order: 0,
-        key: i.id,
-        particulars: 'Invoice ${i.invoiceNumber ?? ''}'.trim(),
-        debit: i.grandTotalPaise,
-        credit: 0,
-        invoiceId: i.id,
-      ),
-    for (final p in ledger.payments)
-      // Allocations of a receipt are shown through the receipt itself.
-      if (p.receiptId == null)
-        _Raw(
-          date: p.paidAt,
-          order: 1,
-          key: p.id,
-          particulars:
-              'Paid at sale · ${p.method.label} (${numberById[p.invoiceId] ?? 'invoice'})',
-          debit: 0,
-          credit: p.amountPaise,
-          invoiceId: p.invoiceId,
-        ),
-    for (final r in ledger.receipts)
-      _Raw(
-        date: r.receivedAt,
-        order: 2,
-        key: r.id,
-        particulars:
-            'Payment received · ${r.method.label}${r.note == null ? '' : ' (${r.note})'}',
-        debit: 0,
-        credit: r.amountPaise,
-      ),
-  ]..sort((a, b) {
-      final byDate = a.date.compareTo(b.date);
-      if (byDate != 0) return byDate;
-      final byOrder = a.order.compareTo(b.order);
-      return byOrder != 0 ? byOrder : a.key.compareTo(b.key);
-    });
+  final raw =
+      <_Raw>[
+        for (final i in ledger.invoices)
+          _Raw(
+            date: i.issuedAt ?? i.createdAt,
+            order: 0,
+            key: i.id,
+            particulars: 'Invoice ${i.invoiceNumber ?? ''}'.trim(),
+            debit: i.grandTotalPaise,
+            credit: 0,
+            invoiceId: i.id,
+          ),
+        for (final p in ledger.payments)
+          // Allocations of a receipt are shown through the receipt itself.
+          if (p.receiptId == null)
+            _Raw(
+              date: p.paidAt,
+              order: 1,
+              key: p.id,
+              particulars:
+                  'Paid at sale · ${p.method.label} (${numberById[p.invoiceId] ?? 'invoice'})',
+              debit: 0,
+              credit: p.amountPaise,
+              invoiceId: p.invoiceId,
+            ),
+        for (final r in ledger.receipts)
+          _Raw(
+            date: r.receivedAt,
+            order: 2,
+            key: r.id,
+            particulars:
+                'Payment received · ${r.method.label}${r.note == null ? '' : ' (${r.note})'}',
+            debit: 0,
+            credit: r.amountPaise,
+          ),
+      ]..sort((a, b) {
+        final byDate = a.date.compareTo(b.date);
+        if (byDate != 0) return byDate;
+        final byOrder = a.order.compareTo(b.order);
+        return byOrder != 0 ? byOrder : a.key.compareTo(b.key);
+      });
 
   final start = from == null ? null : DateTime(from.year, from.month, from.day);
-  final endExclusive =
-      to == null ? null : DateTime(to.year, to.month, to.day + 1);
+  final endExclusive = to == null
+      ? null
+      : DateTime(to.year, to.month, to.day + 1);
 
   var running = 0;
   var opening = 0;
