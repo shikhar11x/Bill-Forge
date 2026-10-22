@@ -121,11 +121,9 @@ class _CartPanelState extends ConsumerState<CartPanel> {
 
     setState(() => _busy = true);
     try {
-      final issued = await ref.read(invoiceRepositoryProvider).issue(
-            _compose(bill),
-            result.entries,
-            dueDate: result.dueDate,
-          );
+      final issued = await ref
+          .read(invoiceRepositoryProvider)
+          .issue(_compose(bill), result.entries, dueDate: result.dueDate);
       _controller.clear();
       if (!mounted) return;
       AppToast.show(

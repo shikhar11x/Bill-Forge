@@ -36,7 +36,9 @@ class InvoiceDetailPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return ref.watch(invoiceDetailProvider(invoiceId)).when(
+    return ref
+        .watch(invoiceDetailProvider(invoiceId))
+        .when(
           loading: () =>
               const Center(child: CircularProgressIndicator(strokeWidth: 2)),
           error: (error, stack) => AppErrorState(
@@ -82,8 +84,9 @@ class _DetailView extends ConsumerWidget {
   Future<void> _collect(BuildContext context, WidgetRef ref) async {
     final customerId = detail.invoice.customerId;
     if (customerId == null) return;
-    final customer =
-        await ref.read(customerRepositoryProvider).getById(customerId);
+    final customer = await ref
+        .read(customerRepositoryProvider)
+        .getById(customerId);
     if (customer == null || !context.mounted) {
       if (context.mounted) {
         AppToast.show(context, 'Customer not found.', type: ToastType.error);
@@ -119,9 +122,9 @@ class _DetailView extends ConsumerWidget {
     final VoidCallback? openShare = shop == null
         ? null
         : () => ShareInvoiceDialog.show(
-              context,
-              InvoiceDocument(shop: shop, detail: detail),
-            );
+            context,
+            InvoiceDocument(shop: shop, detail: detail),
+          );
 
     final rows = buildTotalsRows(
       discountPaise: invoice.discountPaise,
@@ -137,8 +140,8 @@ class _DetailView extends ConsumerWidget {
     final dueText = dueDate == null
         ? null
         : overdue
-            ? 'Due ${formatDate(dueDate)} · overdue by ${daysOverdue(invoice, now)} day${daysOverdue(invoice, now) == 1 ? '' : 's'}'
-            : 'Due ${formatDate(dueDate)}';
+        ? 'Due ${formatDate(dueDate)} · overdue by ${daysOverdue(invoice, now)} day${daysOverdue(invoice, now) == 1 ? '' : 's'}'
+        : 'Due ${formatDate(dueDate)}';
 
     return PageContainer(
       child: ConstrainedBox(

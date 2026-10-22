@@ -46,13 +46,15 @@ void main() {
   }
 
   FilledButton saveButton(WidgetTester tester) => tester.widget<FilledButton>(
-        find.ancestor(
-          of: find.text('Save & issue'),
-          matching: find.byType(FilledButton),
-        ),
-      );
+    find.ancestor(
+      of: find.text('Save & issue'),
+      matching: find.byType(FilledButton),
+    ),
+  );
 
-  testWidgets('a fully paid bill has no credit and no due date', (tester) async {
+  testWidgets('a fully paid bill has no credit and no due date', (
+    tester,
+  ) async {
     await openDialog(tester, hasCustomer: true);
     expect(find.text('No due date'), findsNothing);
 
@@ -78,8 +80,9 @@ void main() {
     expect(find.text('Pick date'), findsOneWidget);
   });
 
-  testWidgets('picking 7 days sets the due date a week from today',
-      (tester) async {
+  testWidgets('picking 7 days sets the due date a week from today', (
+    tester,
+  ) async {
     await openDialog(tester, hasCustomer: true);
     await tester.tap(find.byTooltip('Remove payment'));
     await tester.pumpAndSettle();
@@ -103,8 +106,9 @@ void main() {
     expect(result!.dueDate, isNull);
   });
 
-  testWidgets('a shortfall without a customer cannot be issued',
-      (tester) async {
+  testWidgets('a shortfall without a customer cannot be issued', (
+    tester,
+  ) async {
     await openDialog(tester);
     await tester.enterText(find.byType(TextField).first, '50');
     await tester.pumpAndSettle();
@@ -117,8 +121,9 @@ void main() {
     expect(find.text('No due date'), findsNothing);
   });
 
-  testWidgets('credit up to the limit is allowed, one paisa over is blocked',
-      (tester) async {
+  testWidgets('credit up to the limit is allowed, one paisa over is blocked', (
+    tester,
+  ) async {
     // Limit ₹500.00, already owes ₹300.00, bill is ₹300.00.
     await openDialog(
       tester,
@@ -143,8 +148,9 @@ void main() {
     expect(saveButton(tester).onPressed, isNull);
   });
 
-  testWidgets('a bill with no credit is never blocked by the limit',
-      (tester) async {
+  testWidgets('a bill with no credit is never blocked by the limit', (
+    tester,
+  ) async {
     await openDialog(
       tester,
       total: 30000,
