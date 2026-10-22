@@ -12,8 +12,7 @@ class Invoices extends Table {
   TextColumn get id => text()();
   TextColumn get invoiceNumber => text().nullable()();
   TextColumn get status => text()();
-  TextColumn get customerId =>
-      text().nullable().references(Customers, #id)();
+  TextColumn get customerId => text().nullable().references(Customers, #id)();
   TextColumn get customerName => text().nullable()();
   TextColumn get customerPhone => text().nullable()();
   TextColumn get customerGstin => text().nullable()();
@@ -41,8 +40,8 @@ class Invoices extends Table {
   /// Drafts have no number (NULL), so many drafts can coexist.
   @override
   List<Set<Column<Object>>> get uniqueKeys => [
-        {invoiceNumber},
-      ];
+    {invoiceNumber},
+  ];
 }
 
 @DataClassName('InvoiceItemRow')
@@ -52,8 +51,7 @@ class InvoiceItems extends Table {
   TextColumn get invoiceId =>
       text().references(Invoices, #id, onDelete: KeyAction.cascade)();
   IntColumn get position => integer()();
-  TextColumn get productId =>
-      text().nullable().references(Products, #id)();
+  TextColumn get productId => text().nullable().references(Products, #id)();
   TextColumn get name => text()();
   TextColumn get hsnCode => text().nullable()();
   TextColumn get unit => text()();

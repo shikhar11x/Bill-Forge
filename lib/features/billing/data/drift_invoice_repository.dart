@@ -24,9 +24,9 @@ class DriftInvoiceRepository implements InvoiceRepository {
       ..where((t) => _filter(t, query))
       ..orderBy([(t) => OrderingTerm.desc(t.updatedAt)])
       ..limit(query.limit);
-    return select
-        .watch()
-        .map((rows) => rows.map(invoiceFromRow).toList(growable: false));
+    return select.watch().map(
+      (rows) => rows.map(invoiceFromRow).toList(growable: false),
+    );
   }
 
   Expression<bool> _filter($InvoicesTable t, InvoiceQuery q) {
@@ -41,7 +41,8 @@ class DriftInvoiceRepository implements InvoiceRepository {
     }
     final text = q.search.trim().toLowerCase();
     if (text.isNotEmpty) {
-      e = e &
+      e =
+          e &
           (t.invoiceNumber.lower().contains(text) |
               t.customerName.lower().contains(text));
     }
@@ -50,19 +51,21 @@ class DriftInvoiceRepository implements InvoiceRepository {
 
   @override
   Future<InvoiceDetail?> getDetail(String id) async {
-    final row = await (_db.select(_db.invoices)
-          ..where((t) => t.id.equals(id)))
-        .getSingleOrNull();
+    final row = await (_db.select(
+      _db.invoices,
+    )..where((t) => t.id.equals(id))).getSingleOrNull();
     if (row == null) return null;
 
-    final items = await (_db.select(_db.invoiceItems)
-          ..where((t) => t.invoiceId.equals(id))
-          ..orderBy([(t) => OrderingTerm.asc(t.position)]))
-        .get();
-    final payments = await (_db.select(_db.invoicePayments)
-          ..where((t) => t.invoiceId.equals(id))
-          ..orderBy([(t) => OrderingTerm.asc(t.paidAt)]))
-        .get();
+    final items =
+        await (_db.select(_db.invoiceItems)
+              ..where((t) => t.invoiceId.equals(id))
+              ..orderBy([(t) => OrderingTerm.asc(t.position)]))
+            .get();
+    final payments =
+        await (_db.select(_db.invoicePayments)
+              ..where((t) => t.invoiceId.equals(id))
+              ..orderBy([(t) => OrderingTerm.asc(t.paidAt)]))
+            .get();
 
     return InvoiceDetail(
       invoice: invoiceFromRow(row),
@@ -81,9 +84,9 @@ class DriftInvoiceRepository implements InvoiceRepository {
 
   @override
   Future<void> deleteDraft(String id) async {
-    await (_db.delete(_db.invoices)
-          ..where((t) => t.id.equals(id) & t.status.equals('draft')))
-        .go();
+    await (_db.delete(
+      _db.invoices,
+    )..where((t) => t.id.equals(id) & t.status.equals('draft'))).go();
   }
 
   @override
@@ -112,10 +115,13 @@ class DriftInvoiceRepository implements InvoiceRepository {
       final due = base.grandTotalPaise - paid;
       await _enforceCreditLimit(base.customerId, due);
 
-      final shop =
-          await (_db.select(_db.shopProfiles)..limit(1)).getSingleOrNull();
+      final shop = await (_db.select(
+        _db.shopProfiles,
+      )..limit(1)).getSingleOrNull();
       if (shop == null) {
-        throw const ConflictFailure('Set up your shop before issuing invoices.');
+        throw const ConflictFailure(
+          'Set up your shop before issuing invoices.',
+        );
       }
 
       // Gapless numbering; skip forward if the counter was moved onto a
@@ -128,9 +134,9 @@ class DriftInvoiceRepository implements InvoiceRepository {
       }
 
       final now = DateTime.now();
-      await (_db.update(_db.shopProfiles)
-            ..where((t) => t.id.equals(shop.id)))
-          .write(
+      await (_db.update(
+        _db.shopProfiles,
+      )..where((t) => t.id.equals(shop.id))).write(
         ShopProfilesCompanion(
           nextInvoiceNumber: Value(next + 1),
           updatedAt: Value(now),
@@ -162,11 +168,13 @@ class DriftInvoiceRepository implements InvoiceRepository {
       );
       await _writeInvoice(issued, draft.items);
 
-      await (_db.delete(_db.invoicePayments)
-            ..where((t) => t.invoiceId.equals(base.id)))
-          .go();
+      await (_db.delete(
+        _db.invoicePayments,
+      )..where((t) => t.invoiceId.equals(base.id))).go();
       for (final p in payments) {
-        await _db.into(_db.invoicePayments).insert(
+        await _db
+            .into(_db.invoicePayments)
+            .insert(
               InvoicePaymentsCompanion.insert(
                 id: newId('pay'),
                 invoiceId: base.id,
@@ -184,20 +192,20 @@ class DriftInvoiceRepository implements InvoiceRepository {
   Future<void> _enforceCreditLimit(String? customerId, int duePaise) async {
     if (customerId == null || duePaise <= 0) return;
 
-    final customer = await (_db.select(_db.customers)
-          ..where((t) => t.id.equals(customerId)))
-        .getSingleOrNull();
+    final customer = await (_db.select(
+      _db.customers,
+    )..where((t) => t.id.equals(customerId))).getSingleOrNull();
     final limit = customer?.creditLimitPaise;
     if (limit == null) return;
 
-    final openRows = await (_db.select(_db.invoices)
-          ..where(
-            (t) =>
-                t.customerId.equals(customerId) &
-                t.status.equals(InvoiceStatus.issued.name) &
-                t.grandTotalPaise.isBiggerThan(t.paidPaise),
-          ))
-        .get();
+    final openRows =
+        await (_db.select(_db.invoices)..where(
+              (t) =>
+                  t.customerId.equals(customerId) &
+                  t.status.equals(InvoiceStatus.issued.name) &
+                  t.grandTotalPaise.isBiggerThan(t.paidPaise),
+            ))
+            .get();
     final outstanding = openRows.fold<int>(
       0,
       (sum, r) => sum + r.grandTotalPaise - r.paidPaise,
@@ -212,19 +220,20 @@ class DriftInvoiceRepository implements InvoiceRepository {
   }
 
   Future<void> _ensureNotIssued(String id) async {
-    final row = await (_db.select(_db.invoices)
-          ..where((t) => t.id.equals(id)))
-        .getSingleOrNull();
+    final row = await (_db.select(
+      _db.invoices,
+    )..where((t) => t.id.equals(id))).getSingleOrNull();
     if (row != null && row.status == InvoiceStatus.issued.name) {
       throw const ConflictFailure('This invoice has already been issued.');
     }
   }
 
   Future<bool> _numberTaken(String number) async {
-    final row = await (_db.select(_db.invoices)
-          ..where((t) => t.invoiceNumber.equals(number))
-          ..limit(1))
-        .getSingleOrNull();
+    final row =
+        await (_db.select(_db.invoices)
+              ..where((t) => t.invoiceNumber.equals(number))
+              ..limit(1))
+            .getSingleOrNull();
     return row != null;
   }
 
@@ -232,9 +241,9 @@ class DriftInvoiceRepository implements InvoiceRepository {
     await _db
         .into(_db.invoices)
         .insertOnConflictUpdate(invoiceToCompanion(invoice));
-    await (_db.delete(_db.invoiceItems)
-          ..where((t) => t.invoiceId.equals(invoice.id)))
-        .go();
+    await (_db.delete(
+      _db.invoiceItems,
+    )..where((t) => t.invoiceId.equals(invoice.id))).go();
     for (final item in items) {
       await _db.into(_db.invoiceItems).insert(itemToCompanion(item));
     }
