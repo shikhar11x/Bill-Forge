@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:billforge/features/payments/data/pdf/statement_pdf_builder.dart';
 import 'package:billforge/features/payments/domain/customer_ledger.dart';
 import 'package:billforge/features/payments/domain/statement.dart';
+
 import '../../support/customer_fakes.dart';
 import '../../support/fakes.dart';
 import '../../support/payment_fakes.dart';
@@ -72,7 +73,11 @@ void main() {
       shop: shop,
       customer: sampleCustomer(),
       statement: buildStatement(
-        ledger: CustomerLedger(invoices: invoices, payments: const [], receipts: const []),
+        ledger: CustomerLedger(
+          invoices: invoices,
+          payments: const [],
+          receipts: const [],
+        ),
       ),
       fonts: fonts,
     );
