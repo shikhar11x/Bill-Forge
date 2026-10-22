@@ -6,8 +6,10 @@ import 'package:billforge/app/theme/app_theme.dart';
 import 'package:billforge/features/customers/application/customer_providers.dart';
 import 'package:billforge/features/customers/domain/customer.dart';
 import 'package:billforge/features/customers/presentation/customers_page.dart';
+import 'package:billforge/features/payments/application/payment_providers.dart';
 
 import '../../support/customer_fakes.dart';
+import '../../support/payment_fakes.dart';
 
 void main() {
   Future<void> pumpPage(
@@ -24,6 +26,7 @@ void main() {
           customerRepositoryProvider.overrideWithValue(
             FakeCustomerRepository(customers),
           ),
+          paymentRepositoryProvider.overrideWithValue(FakePaymentRepository()),
         ],
         child: MaterialApp(
           theme: AppTheme.dark(),
