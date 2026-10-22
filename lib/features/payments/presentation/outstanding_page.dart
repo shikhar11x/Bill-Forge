@@ -41,8 +41,9 @@ class OutstandingPage extends ConsumerWidget {
   ) async {
     try {
       // The report uses invoice snapshots; reminders use the current record.
-      final customer =
-          await ref.read(customerRepositoryProvider).getById(entry.customerId);
+      final customer = await ref
+          .read(customerRepositoryProvider)
+          .getById(entry.customerId);
       final open = await ref
           .read(paymentRepositoryProvider)
           .watchOpenInvoicesFor(entry.customerId)
@@ -112,7 +113,10 @@ class OutstandingPage extends ConsumerWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(e.customerName, style: theme.textTheme.titleSmall),
+                            Text(
+                              e.customerName,
+                              style: theme.textTheme.titleSmall,
+                            ),
                             Text(
                               '${e.openInvoices} open invoice${e.openInvoices == 1 ? '' : 's'}'
                               '${e.overduePaise > 0 ? ' · ${formatPaise(e.overduePaise)} overdue' : ''}',
@@ -157,7 +161,9 @@ class OutstandingPage extends ConsumerWidget {
                     if (e.customerPhone != null)
                       Text(
                         e.customerPhone!,
-                        style: theme.textTheme.bodySmall?.copyWith(color: muted),
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: muted,
+                        ),
                       ),
                   ],
                 ),
@@ -236,8 +242,9 @@ class OutstandingPage extends ConsumerWidget {
               LayoutBuilder(
                 builder: (context, box) {
                   const gap = AppSpacing.lg;
-                  final columns =
-                      box.maxWidth >= 640 ? 3 : (box.maxWidth >= 420 ? 2 : 1);
+                  final columns = box.maxWidth >= 640
+                      ? 3
+                      : (box.maxWidth >= 420 ? 2 : 1);
                   final width = (box.maxWidth - gap * (columns - 1)) / columns;
                   return Wrap(
                     spacing: gap,

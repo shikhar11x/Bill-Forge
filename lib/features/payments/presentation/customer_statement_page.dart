@@ -169,7 +169,10 @@ class _CustomerStatementPageState extends ConsumerState<CustomerStatementPage> {
                       formatPaise(statement.openingPaise),
                     ),
                     _SummaryRow('Billed', formatPaise(statement.billedPaise)),
-                    _SummaryRow('Received', formatPaise(statement.receivedPaise)),
+                    _SummaryRow(
+                      'Received',
+                      formatPaise(statement.receivedPaise),
+                    ),
                     const Divider(),
                     _SummaryRow(
                       'Closing balance',
@@ -209,9 +212,7 @@ class _CustomerStatementPageState extends ConsumerState<CustomerStatementPage> {
                                         ? formatPaise(e.debitPaise)
                                         : '-${formatPaise(e.creditPaise)}',
                                     style: theme.textTheme.titleSmall?.copyWith(
-                                      color: isDebit
-                                          ? null
-                                          : AppColors.success,
+                                      color: isDebit ? null : AppColors.success,
                                     ),
                                   ),
                                   Text(

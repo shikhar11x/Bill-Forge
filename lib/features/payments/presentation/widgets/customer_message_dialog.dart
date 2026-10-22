@@ -42,17 +42,16 @@ class CustomerMessageDialog extends ConsumerStatefulWidget {
     String? phone,
     Future<Uint8List> Function()? buildPdf,
     String pdfFileName = 'document.pdf',
-  }) =>
-      showDialog<void>(
-        context: context,
-        builder: (_) => CustomerMessageDialog(
-          title: title,
-          message: message,
-          phone: phone,
-          buildPdf: buildPdf,
-          pdfFileName: pdfFileName,
-        ),
-      );
+  }) => showDialog<void>(
+    context: context,
+    builder: (_) => CustomerMessageDialog(
+      title: title,
+      message: message,
+      phone: phone,
+      buildPdf: buildPdf,
+      pdfFileName: pdfFileName,
+    ),
+  );
 
   @override
   ConsumerState<CustomerMessageDialog> createState() =>
@@ -82,10 +81,9 @@ class _CustomerMessageDialogState extends ConsumerState<CustomerMessageDialog> {
     if (!(_formKey.currentState?.validate() ?? false)) return;
     setState(() => _problem = null);
     // Launch before any await: browsers block pop-ups opened after a gap.
-    final opened = await ref.read(invoiceShareServiceProvider).openChat(
-          phone: _phoneOrNull,
-          message: _message.text.trim(),
-        );
+    final opened = await ref
+        .read(invoiceShareServiceProvider)
+        .openChat(phone: _phoneOrNull, message: _message.text.trim());
     if (!mounted || opened) return;
     setState(() {
       _problem = 'Could not open WhatsApp. Check that it is installed.';
@@ -102,7 +100,9 @@ class _CustomerMessageDialogState extends ConsumerState<CustomerMessageDialog> {
     });
     try {
       final bytes = await build();
-      await ref.read(invoiceShareServiceProvider).sharePdf(
+      await ref
+          .read(invoiceShareServiceProvider)
+          .sharePdf(
             bytes: bytes,
             fileName: widget.pdfFileName,
             message: _message.text.trim(),
@@ -140,7 +140,10 @@ class _CustomerMessageDialogState extends ConsumerState<CustomerMessageDialog> {
               child: Row(
                 children: [
                   Expanded(
-                    child: Text(widget.title, style: theme.textTheme.titleMedium),
+                    child: Text(
+                      widget.title,
+                      style: theme.textTheme.titleMedium,
+                    ),
                   ),
                   IconButton(
                     tooltip: 'Close',
@@ -183,7 +186,9 @@ class _CustomerMessageDialogState extends ConsumerState<CustomerMessageDialog> {
                         hasPdf
                             ? 'Open WhatsApp starts a chat with this message. WhatsApp links cannot attach files, so use Share PDF to send the PDF.'
                             : 'Open WhatsApp starts a chat with this message. Press send inside WhatsApp.',
-                        style: theme.textTheme.bodySmall?.copyWith(color: muted),
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: muted,
+                        ),
                       ),
                       if (_problem != null)
                         Text(

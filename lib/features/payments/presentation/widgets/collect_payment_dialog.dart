@@ -41,15 +41,14 @@ class CollectPaymentDialog extends ConsumerStatefulWidget {
     required Customer customer,
     required List<Invoice> openInvoices,
     String? invoiceId,
-  }) =>
-      showDialog<bool>(
-        context: context,
-        builder: (_) => CollectPaymentDialog(
-          customer: customer,
-          openInvoices: openInvoices,
-          initialInvoiceId: invoiceId,
-        ),
-      );
+  }) => showDialog<bool>(
+    context: context,
+    builder: (_) => CollectPaymentDialog(
+      customer: customer,
+      openInvoices: openInvoices,
+      initialInvoiceId: invoiceId,
+    ),
+  );
 
   @override
   ConsumerState<CollectPaymentDialog> createState() =>
@@ -66,8 +65,8 @@ class _CollectPaymentDialogState extends ConsumerState<CollectPaymentDialog> {
   String? _problem;
 
   Map<String, Invoice> get _byId => {
-        for (final i in widget.openInvoices) i.id: i,
-      };
+    for (final i in widget.openInvoices) i.id: i,
+  };
 
   String _validInitial() {
     final id = widget.initialInvoiceId;
@@ -77,7 +76,8 @@ class _CollectPaymentDialogState extends ConsumerState<CollectPaymentDialog> {
   int get _totalDue =>
       widget.openInvoices.fold<int>(0, (sum, i) => sum + i.duePaise);
 
-  int get _due => _applyTo == _all ? _totalDue : (_byId[_applyTo]?.duePaise ?? 0);
+  int get _due =>
+      _applyTo == _all ? _totalDue : (_byId[_applyTo]?.duePaise ?? 0);
 
   String _label(Invoice i) =>
       '${i.invoiceNumber ?? 'Bill'} · due ${formatPaise(i.duePaise)}';
@@ -102,7 +102,9 @@ class _CollectPaymentDialogState extends ConsumerState<CollectPaymentDialog> {
       _problem = null;
     });
     try {
-      await ref.read(paymentRepositoryProvider).collect(
+      await ref
+          .read(paymentRepositoryProvider)
+          .collect(
             customerId: widget.customer.id,
             amountPaise: parsePaise(_amount.text)!,
             method: _method,
@@ -119,7 +121,11 @@ class _CollectPaymentDialogState extends ConsumerState<CollectPaymentDialog> {
         _problem = failure.message;
       });
     } catch (error, stack) {
-      AppLogger.error('Collecting payment failed', error: error, stackTrace: stack);
+      AppLogger.error(
+        'Collecting payment failed',
+        error: error,
+        stackTrace: stack,
+      );
       if (!mounted) return;
       setState(() {
         _saving = false;
@@ -169,8 +175,9 @@ class _CollectPaymentDialogState extends ConsumerState<CollectPaymentDialog> {
                   label: 'Amount received',
                   controller: _amount,
                   prefixIcon: Icons.currency_rupee_rounded,
-                  keyboardType:
-                      const TextInputType.numberWithOptions(decimal: true),
+                  keyboardType: const TextInputType.numberWithOptions(
+                    decimal: true,
+                  ),
                   inputFormatters: [
                     FilteringTextInputFormatter.allow(RegExp('[0-9.]')),
                     LengthLimitingTextInputFormatter(12),

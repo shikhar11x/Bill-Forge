@@ -33,7 +33,9 @@ class CustomerAccountPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return ref.watch(customerByIdProvider(customerId)).when(
+    return ref
+        .watch(customerByIdProvider(customerId))
+        .when(
           loading: () =>
               const Center(child: CircularProgressIndicator(strokeWidth: 2)),
           error: (error, stack) => AppErrorState(
@@ -73,10 +75,7 @@ class _AccountView extends ConsumerWidget {
     ref.invalidate(customerByIdProvider(customer.id));
   }
 
-  Future<void> _collect(
-    BuildContext context,
-    List<Invoice> open,
-  ) async {
+  Future<void> _collect(BuildContext context, List<Invoice> open) async {
     final recorded = await CollectPaymentDialog.show(
       context,
       customer: customer,
@@ -94,8 +93,7 @@ class _AccountView extends ConsumerWidget {
     final openAsync = ref.watch(customerOpenInvoicesProvider(customer.id));
     final open = openAsync.dataOrNull ?? const <Invoice>[];
     final receipts =
-        ref.watch(customerReceiptsProvider(customer.id)).dataOrNull ??
-            const [];
+        ref.watch(customerReceiptsProvider(customer.id)).dataOrNull ?? const [];
     final now = DateTime.now();
 
     final outstanding = open.fold<int>(0, (s, i) => s + i.duePaise);
@@ -117,7 +115,9 @@ class _AccountView extends ConsumerWidget {
       ),
       AppStatCard(
         label: 'Credit limit',
-        value: limit == null ? 'No limit' : formatPaise(limit, showDecimals: false),
+        value: limit == null
+            ? 'No limit'
+            : formatPaise(limit, showDecimals: false),
         icon: Icons.credit_score_outlined,
         caption: limit == null
             ? null
@@ -157,7 +157,9 @@ class _AccountView extends ConsumerWidget {
                       if (customer.phone != null)
                         Text(
                           customer.phone!,
-                          style: theme.textTheme.bodyMedium?.copyWith(color: muted),
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: muted,
+                          ),
                         ),
                     ],
                   ),
@@ -173,7 +175,9 @@ class _AccountView extends ConsumerWidget {
             LayoutBuilder(
               builder: (context, box) {
                 const gap = AppSpacing.lg;
-                final columns = box.maxWidth >= 640 ? 3 : (box.maxWidth >= 420 ? 2 : 1);
+                final columns = box.maxWidth >= 640
+                    ? 3
+                    : (box.maxWidth >= 420 ? 2 : 1);
                 final width = (box.maxWidth - gap * (columns - 1)) / columns;
                 return Wrap(
                   spacing: gap,
@@ -191,7 +195,9 @@ class _AccountView extends ConsumerWidget {
                 AppButton(
                   label: 'Collect payment',
                   icon: Icons.payments_outlined,
-                  onPressed: open.isEmpty ? null : () => _collect(context, open),
+                  onPressed: open.isEmpty
+                      ? null
+                      : () => _collect(context, open),
                 ),
                 AppButton(
                   label: 'Send reminder',
@@ -200,11 +206,11 @@ class _AccountView extends ConsumerWidget {
                   onPressed: open.isEmpty
                       ? null
                       : () => showReminderDialog(
-                            context,
-                            ref,
-                            customer: customer,
-                            openInvoices: open,
-                          ),
+                          context,
+                          ref,
+                          customer: customer,
+                          openInvoices: open,
+                        ),
                 ),
                 AppButton(
                   label: 'Statement',
@@ -219,7 +225,9 @@ class _AccountView extends ConsumerWidget {
               title: 'Open invoices',
               child: open.isEmpty
                   ? const AppCard(
-                      child: Text('No pending invoices. This customer is paid up.'),
+                      child: Text(
+                        'No pending invoices. This customer is paid up.',
+                      ),
                     )
                   : AppCard(
                       padding: EdgeInsets.zero,
@@ -248,7 +256,8 @@ class _AccountView extends ConsumerWidget {
                               subtitle: Text(
                                 [
                                   formatDateTime(receipts[i].receivedAt),
-                                  if (receipts[i].note != null) receipts[i].note!,
+                                  if (receipts[i].note != null)
+                                    receipts[i].note!,
                                 ].join(' · '),
                                 style: TextStyle(color: muted),
                               ),
