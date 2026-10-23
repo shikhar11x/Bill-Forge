@@ -2,7 +2,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 
 import 'package:billforge/features/billing/domain/payment_method.dart';
 
-part '../data/domain/customer_payment.freezed.dart';
+part 'customer_payment.freezed.dart';
 
 /// A payment received from a customer (a receipt). It is spread across the
 /// customer's open invoices through `InvoicePayment.receiptId`.
