@@ -20,6 +20,7 @@ import 'package:billforge/core/widgets/app_stat_card.dart';
 import 'package:billforge/core/widgets/app_toast.dart';
 import 'package:billforge/features/customers/application/customer_providers.dart';
 import 'package:billforge/features/payments/application/payment_providers.dart';
+import 'package:billforge/features/shop/application/shop_providers.dart';
 import 'package:billforge/features/payments/domain/outstanding.dart';
 import 'package:billforge/features/payments/presentation/widgets/customer_message_dialog.dart';
 
@@ -72,6 +73,8 @@ class OutstandingPage extends ConsumerWidget {
     final muted = theme.colorScheme.onSurfaceVariant;
     final async = ref.watch(openInvoicesProvider);
     final report = ref.watch(outstandingReportProvider);
+    // Reminders need the shop, so keep it loaded while this page is open.
+    ref.watch(shopProfileProvider);
 
     Widget body() {
       if (!async.hasValue) {

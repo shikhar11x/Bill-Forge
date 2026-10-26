@@ -78,6 +78,9 @@ class _CustomerStatementPageState extends ConsumerState<CustomerStatementPage> {
 
   @override
   Widget build(BuildContext context) {
+    // Sharing needs the shop, so keep it loaded while this page is open.
+    ref.watch(shopProfileProvider);
+
     final customerAsync = ref.watch(customerByIdProvider(widget.customerId));
     final ledgerAsync = ref.watch(customerLedgerProvider(widget.customerId));
 

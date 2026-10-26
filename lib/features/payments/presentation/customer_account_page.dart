@@ -25,6 +25,7 @@ import 'package:billforge/features/payments/application/payment_providers.dart';
 import 'package:billforge/features/payments/domain/outstanding.dart';
 import 'package:billforge/features/payments/presentation/widgets/collect_payment_dialog.dart';
 import 'package:billforge/features/payments/presentation/widgets/customer_message_dialog.dart';
+import 'package:billforge/features/shop/application/shop_providers.dart';
 
 class CustomerAccountPage extends ConsumerWidget {
   const CustomerAccountPage({required this.customerId, super.key});
@@ -95,6 +96,8 @@ class _AccountView extends ConsumerWidget {
     final receipts =
         ref.watch(customerReceiptsProvider(customer.id)).dataOrNull ?? const [];
     final now = DateTime.now();
+    // Reminders need the shop, so keep it loaded while this page is open.
+    ref.watch(shopProfileProvider);
 
     final outstanding = open.fold<int>(0, (s, i) => s + i.duePaise);
     final overdue = open
