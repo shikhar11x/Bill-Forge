@@ -1,6 +1,7 @@
 import 'package:drift/drift.dart';
 import 'package:drift_flutter/drift_flutter.dart';
 
+import 'package:billforge/features/billing/data/credit_notes_table.dart';
 import 'package:billforge/features/billing/data/invoices_table.dart';
 import 'package:billforge/features/customers/data/customers_table.dart';
 import 'package:billforge/features/inventory/data/purchases_table.dart';
@@ -22,6 +23,8 @@ part 'app_database.g.dart';
     Invoices,
     InvoiceItems,
     InvoicePayments,
+    CreditNotes,
+    CreditNoteItems,
     CustomerPayments,
     Suppliers,
     Purchases,
@@ -33,7 +36,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase([QueryExecutor? executor]) : super(executor ?? _openConnection());
 
   @override
-  int get schemaVersion => 6;
+  int get schemaVersion => 7;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -88,6 +91,17 @@ class AppDatabase extends _$AppDatabase {
         if (from >= 4) {
           await m.addColumn(invoices, invoices.dueDate);
           await m.addColumn(invoicePayments, invoicePayments.receiptId);
+        }
+      }
+      if (from < 7) {
+        await m.createTable(creditNotes);
+        await m.createTable(creditNoteItems);
+        await _createIndexes(m, 'credit_notes_');
+        await _createIndexes(m, 'credit_note_items_');
+        // Invoices created in this same upgrade (from < 4) already have
+        // the column from the current table definition.
+        if (from >= 4) {
+          await m.addColumn(invoices, invoices.creditedPaise);
         }
       }
     },
