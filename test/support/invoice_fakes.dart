@@ -27,7 +27,7 @@ Invoice sampleInvoice({
   roundOffPaise: 0,
   grandTotalPaise: grandTotalPaise,
   paidPaise: paidPaise,
-  issuedAt: status == InvoiceStatus.issued ? DateTime(2026, 6, 1, 14, 5) : null,
+  issuedAt: status == InvoiceStatus.draft ? null : DateTime(2026, 6, 1, 14, 5),
   createdAt: DateTime(2026, 6, 1),
   updatedAt: DateTime(2026, 6, 1, 14, 5),
 );
@@ -37,6 +37,10 @@ class FakeInvoiceRepository implements InvoiceRepository {
     : _invoices = List.of(invoices);
 
   final List<Invoice> _invoices;
+
+  /// Full details (with items) by invoice id, for screens that need lines.
+  /// Fill it in after construction: `FakeInvoiceRepository()..details['x'] = d`.
+  final Map<String, InvoiceDetail> details = {};
   InvoiceDetail? lastDraft;
   InvoiceDetail? lastIssued;
   List<PaymentEntry>? lastPayments;
@@ -52,7 +56,9 @@ class FakeInvoiceRepository implements InvoiceRepository {
             case InvoiceStatusFilter.drafts:
               return i.isDraft;
             case InvoiceStatusFilter.issued:
-              return !i.isDraft;
+              return i.status == InvoiceStatus.issued;
+            case InvoiceStatusFilter.cancelled:
+              return i.isCancelled;
           }
         })
         .take(query.limit)
@@ -62,6 +68,8 @@ class FakeInvoiceRepository implements InvoiceRepository {
 
   @override
   Future<InvoiceDetail?> getDetail(String id) async {
+    final detail = details[id];
+    if (detail != null) return detail;
     for (final i in _invoices) {
       if (i.id == id) return InvoiceDetail(invoice: i, items: const []);
     }

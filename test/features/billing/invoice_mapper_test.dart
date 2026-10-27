@@ -31,6 +31,7 @@ void main() {
     roundOffPaise: 0,
     grandTotalPaise: 20900,
     paidPaise: 10000,
+    creditedPaise: 0,
     issuedAt: when,
     createdAt: when,
     updatedAt: when,

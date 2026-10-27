@@ -68,6 +68,7 @@ void main() {
       roundOffPaise: 0,
       grandTotalPaise: 10000,
       paidPaise: 4000,
+      creditedPaise: 0,
       dueDate: DateTime(2026, 7, 1),
       issuedAt: when,
       createdAt: when,

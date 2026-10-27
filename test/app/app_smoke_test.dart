@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:billforge/features/products/application/product_providers.dart';
+import 'package:billforge/features/billing/application/billing_providers.dart';
 import 'package:billforge/features/payments/application/payment_providers.dart';
+import 'package:billforge/features/products/application/product_providers.dart';
+import 'package:billforge/features/reports/application/report_providers.dart';
 import 'package:billforge/features/shop/application/shop_providers.dart';
 
 import '../support/fakes.dart';
+import '../support/invoice_fakes.dart';
 import '../support/payment_fakes.dart';
+import '../support/report_fakes.dart';
 
 import 'package:billforge/app/app.dart';
 import 'package:billforge/app/config/env.dart';
@@ -37,6 +41,8 @@ void main() {
             ),
           ),
           authControllerProvider.overrideWith(_SignedInController.new),
+          reportRepositoryProvider.overrideWithValue(FakeReportRepository()),
+          invoiceRepositoryProvider.overrideWithValue(FakeInvoiceRepository()),
           productRepositoryProvider.overrideWithValue(FakeProductRepository()),
           paymentRepositoryProvider.overrideWithValue(FakePaymentRepository()),
           shopProfileProvider.overrideWith((ref) => Stream.value(sampleShop())),
