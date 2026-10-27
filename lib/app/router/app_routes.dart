@@ -10,6 +10,8 @@ abstract final class AppRoutes {
   static const billingNew = '/billing/new';
   static String invoice(String id) => '/billing/$id';
   static String invoicePreview(String id) => '/billing/$id/preview';
+  static String invoiceReturn(String id) => '/billing/$id/return';
+  static String creditNote(String id) => '/billing/credit-notes/$id';
   static const products = '/products';
   static const productNew = '/products/new';
   static String productEdit(String id) => '/products/$id/edit';

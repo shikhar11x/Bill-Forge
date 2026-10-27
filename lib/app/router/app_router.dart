@@ -12,9 +12,11 @@ import 'package:billforge/features/auth/presentation/login_page.dart';
 import 'package:billforge/features/auth/presentation/register_page.dart';
 import 'package:billforge/features/auth/presentation/splash_page.dart';
 import 'package:billforge/features/billing/presentation/billing_page.dart';
+import 'package:billforge/features/billing/presentation/credit_note_page.dart';
 import 'package:billforge/features/billing/presentation/invoice_detail_page.dart';
 import 'package:billforge/features/billing/presentation/invoice_preview_page.dart';
 import 'package:billforge/features/billing/presentation/pos_page.dart';
+import 'package:billforge/features/billing/presentation/return_items_page.dart';
 import 'package:billforge/features/customers/presentation/customer_form_page.dart';
 import 'package:billforge/features/customers/presentation/customers_page.dart';
 import 'package:billforge/features/dashboard/presentation/dashboard_page.dart';
@@ -27,8 +29,8 @@ import 'package:billforge/features/payments/presentation/customer_statement_page
 import 'package:billforge/features/payments/presentation/outstanding_page.dart';
 import 'package:billforge/features/products/presentation/product_form_page.dart';
 import 'package:billforge/features/products/presentation/products_page.dart';
+import 'package:billforge/features/reports/presentation/reports_page.dart';
 import 'package:billforge/features/settings/presentation/settings_page.dart';
-import 'package:billforge/features/shared/presentation/coming_soon_page.dart';
 import 'package:billforge/features/shop/application/shop_providers.dart';
 import 'package:billforge/features/shop/domain/shop_profile.dart';
 import 'package:billforge/features/shop/presentation/shop_setup_page.dart';
@@ -127,6 +129,16 @@ final routerProvider = Provider<GoRouter>((ref) {
                     _noTransition(state, const PosPage()),
               ),
               GoRoute(
+                path: 'credit-notes/:id',
+                pageBuilder: (context, state) {
+                  final id = state.pathParameters['id']!;
+                  return _noTransition(
+                    state,
+                    CreditNotePage(key: ValueKey(id), creditNoteId: id),
+                  );
+                },
+              ),
+              GoRoute(
                 path: ':id',
                 pageBuilder: (context, state) {
                   final id = state.pathParameters['id']!;
@@ -143,6 +155,16 @@ final routerProvider = Provider<GoRouter>((ref) {
                       return _noTransition(
                         state,
                         InvoicePreviewPage(key: ValueKey(id), invoiceId: id),
+                      );
+                    },
+                  ),
+                  GoRoute(
+                    path: 'return',
+                    pageBuilder: (context, state) {
+                      final id = state.pathParameters['id']!;
+                      return _noTransition(
+                        state,
+                        ReturnItemsPage(key: ValueKey(id), invoiceId: id),
                       );
                     },
                   ),
@@ -253,13 +275,7 @@ final routerProvider = Provider<GoRouter>((ref) {
               ),
             ],
           ),
-          _shellRoute(
-            AppRoutes.reports,
-            const ComingSoonPage(
-              title: 'Reports',
-              icon: Icons.insert_chart_rounded,
-            ),
-          ),
+          _shellRoute(AppRoutes.reports, const ReportsPage()),
           _shellRoute(AppRoutes.settings, const SettingsPage()),
         ],
       ),
