@@ -1,3 +1,4 @@
+import 'package:billforge/features/billing/domain/credit_note.dart';
 import 'package:billforge/features/billing/domain/invoice.dart';
 import 'package:billforge/features/payments/domain/customer_payment.dart';
 
@@ -7,13 +8,15 @@ class CustomerLedger {
     required this.invoices,
     required this.payments,
     required this.receipts,
+    this.creditNotes = const [],
   });
 
-  /// Issued invoices only.
+  /// Issued and cancelled invoices.
   final List<Invoice> invoices;
 
   /// Every payment row on those invoices: paid at sale (no `receiptId`) and
   /// allocations of later receipts.
   final List<InvoicePayment> payments;
   final List<CustomerPayment> receipts;
+  final List<CreditNote> creditNotes;
 }

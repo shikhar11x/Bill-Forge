@@ -4,6 +4,7 @@ import 'package:billforge/core/database/app_database.dart';
 import 'package:billforge/core/errors/failure.dart';
 import 'package:billforge/core/utils/formatters.dart';
 import 'package:billforge/core/utils/ids.dart';
+import 'package:billforge/features/billing/data/credit_note_mapper.dart';
 import 'package:billforge/features/billing/data/invoice_mapper.dart';
 import 'package:billforge/features/billing/domain/invoice.dart';
 import 'package:billforge/features/billing/domain/payment_method.dart';
@@ -18,11 +19,11 @@ class DriftPaymentRepository implements PaymentRepository {
 
   final AppDatabase _db;
 
-  /// Issued, belongs to a customer, and not fully paid.
+  /// Issued, belongs to a customer, and not fully paid after credits.
   Expression<bool> _open($InvoicesTable t) =>
       t.status.equals(InvoiceStatus.issued.name) &
       t.customerId.isNotNull() &
-      t.grandTotalPaise.isBiggerThan(t.paidPaise);
+      (t.grandTotalPaise - t.creditedPaise).isBiggerThan(t.paidPaise);
 
   @override
   Stream<List<Invoice>> watchOpenInvoices() {
@@ -66,11 +67,12 @@ class DriftPaymentRepository implements PaymentRepository {
 
   @override
   Future<CustomerLedger> loadLedger(String customerId) async {
+    // Cancelled invoices stay in the ledger so their credit notes balance.
+    final statuses = [InvoiceStatus.issued.name, InvoiceStatus.cancelled.name];
+
     final invoiceRows =
         await (_db.select(_db.invoices)..where(
-              (t) =>
-                  t.customerId.equals(customerId) &
-                  t.status.equals(InvoiceStatus.issued.name),
+              (t) => t.customerId.equals(customerId) & t.status.isIn(statuses),
             ))
             .get();
 
@@ -82,12 +84,16 @@ class DriftPaymentRepository implements PaymentRepository {
               ),
             ])..where(
               _db.invoices.customerId.equals(customerId) &
-                  _db.invoices.status.equals(InvoiceStatus.issued.name),
+                  _db.invoices.status.isIn(statuses),
             ))
             .get();
 
     final receiptRows = await (_db.select(
       _db.customerPayments,
+    )..where((t) => t.customerId.equals(customerId))).get();
+
+    final creditRows = await (_db.select(
+      _db.creditNotes,
     )..where((t) => t.customerId.equals(customerId))).get();
 
     return CustomerLedger(
@@ -96,6 +102,7 @@ class DriftPaymentRepository implements PaymentRepository {
           .map((r) => paymentFromRow(r.readTable(_db.invoicePayments)))
           .toList(growable: false),
       receipts: receiptRows.map(receiptFromRow).toList(growable: false),
+      creditNotes: creditRows.map(creditNoteFromRow).toList(growable: false),
     );
   }
 

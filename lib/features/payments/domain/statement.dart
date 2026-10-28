@@ -141,6 +141,29 @@ Statement buildStatement({
             debit: 0,
             credit: r.amountPaise,
           ),
+        for (final n in ledger.creditNotes) ...[
+          _Raw(
+            date: n.issuedAt,
+            order: 3,
+            key: n.id,
+            particulars:
+                'Credit note ${n.creditNoteNumber} (${n.invoiceNumber})',
+            debit: 0,
+            credit: n.totalPaise,
+            invoiceId: n.invoiceId,
+          ),
+          if (n.refundPaise > 0)
+            _Raw(
+              date: n.issuedAt,
+              order: 4,
+              key: '${n.id}-refund',
+              particulars:
+                  'Refund · ${n.refundMethod?.label ?? 'Cash'} (${n.creditNoteNumber})',
+              debit: n.refundPaise,
+              credit: 0,
+              invoiceId: n.invoiceId,
+            ),
+        ],
       ]..sort((a, b) {
         final byDate = a.date.compareTo(b.date);
         if (byDate != 0) return byDate;
