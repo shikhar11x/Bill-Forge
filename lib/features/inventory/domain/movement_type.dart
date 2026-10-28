@@ -3,7 +3,8 @@ enum MovementType {
   sale('Sale'),
   purchase('Purchase'),
   adjustment('Adjustment'),
-  supplierReturn('Returned to supplier');
+  supplierReturn('Returned to supplier'),
+  customerReturn('Customer return');
 
   const MovementType(this.label);
 
@@ -38,4 +39,5 @@ enum AdjustmentReason {
 abstract final class StockRef {
   static const invoice = 'invoice';
   static const purchase = 'purchase';
+  static const creditNote = 'creditNote';
 }

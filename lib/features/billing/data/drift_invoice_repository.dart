@@ -38,6 +38,8 @@ class DriftInvoiceRepository implements InvoiceRepository {
         e = e & t.status.equals(InvoiceStatus.draft.name);
       case InvoiceStatusFilter.issued:
         e = e & t.status.equals(InvoiceStatus.issued.name);
+      case InvoiceStatusFilter.cancelled:
+        e = e & t.status.equals(InvoiceStatus.cancelled.name);
     }
     final text = q.search.trim().toLowerCase();
     if (text.isNotEmpty) {
@@ -203,12 +205,14 @@ class DriftInvoiceRepository implements InvoiceRepository {
               (t) =>
                   t.customerId.equals(customerId) &
                   t.status.equals(InvoiceStatus.issued.name) &
-                  t.grandTotalPaise.isBiggerThan(t.paidPaise),
+                  (t.grandTotalPaise - t.creditedPaise).isBiggerThan(
+                    t.paidPaise,
+                  ),
             ))
             .get();
     final outstanding = openRows.fold<int>(
       0,
-      (sum, r) => sum + r.grandTotalPaise - r.paidPaise,
+      (sum, r) => sum + r.grandTotalPaise - r.creditedPaise - r.paidPaise,
     );
 
     final check = checkCredit(

@@ -8,7 +8,8 @@ part 'invoice.freezed.dart';
 
 enum InvoiceStatus {
   draft,
-  issued;
+  issued,
+  cancelled;
 
   static InvoiceStatus fromName(String name) =>
       values.firstWhere((e) => e.name == name, orElse: () => draft);
@@ -45,6 +46,9 @@ abstract class Invoice with _$Invoice {
     required int grandTotalPaise,
     @Default(0) int paidPaise,
 
+    /// Total of the credit notes issued against this invoice.
+    @Default(0) int creditedPaise,
+
     /// When the unpaid balance is expected. Only set for credit sales.
     DateTime? dueDate,
     DateTime? issuedAt,
@@ -53,11 +57,14 @@ abstract class Invoice with _$Invoice {
   }) = _Invoice;
 
   bool get isDraft => status == InvoiceStatus.draft;
+  bool get isCancelled => status == InvoiceStatus.cancelled;
   int get taxPaise => cgstPaise + sgstPaise + igstPaise;
-  int get duePaise => grandTotalPaise - paidPaise;
+
+  /// What the customer still has to pay for this invoice.
+  int get duePaise => grandTotalPaise - creditedPaise - paidPaise;
 
   PaymentStatus get paymentStatus {
-    if (paidPaise >= grandTotalPaise) return PaymentStatus.paid;
+    if (duePaise <= 0) return PaymentStatus.paid;
     return paidPaise <= 0 ? PaymentStatus.unpaid : PaymentStatus.partial;
   }
 }

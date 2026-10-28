@@ -29,6 +29,7 @@ class Invoices extends Table {
   IntColumn get roundOffPaise => integer()();
   IntColumn get grandTotalPaise => integer()();
   IntColumn get paidPaise => integer().withDefault(const Constant(0))();
+  IntColumn get creditedPaise => integer().withDefault(const Constant(0))();
   DateTimeColumn get dueDate => dateTime().nullable()();
   DateTimeColumn get issuedAt => dateTime().nullable()();
   DateTimeColumn get createdAt => dateTime()();

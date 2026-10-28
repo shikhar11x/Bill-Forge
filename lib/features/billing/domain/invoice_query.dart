@@ -4,7 +4,7 @@ part 'invoice_query.freezed.dart';
 
 const kInvoicePageSize = 30;
 
-enum InvoiceStatusFilter { all, drafts, issued }
+enum InvoiceStatusFilter { all, drafts, issued, cancelled }
 
 @freezed
 abstract class InvoiceQuery with _$InvoiceQuery {

@@ -82,6 +82,9 @@ class _StockHistoryPageState extends ConsumerState<StockHistoryPage> {
     if (id == null) return;
     if (m.refType == StockRef.invoice) context.push(AppRoutes.invoice(id));
     if (m.refType == StockRef.purchase) context.push(AppRoutes.purchase(id));
+    if (m.refType == StockRef.creditNote) {
+      context.push(AppRoutes.creditNote(id));
+    }
   }
 
   @override
