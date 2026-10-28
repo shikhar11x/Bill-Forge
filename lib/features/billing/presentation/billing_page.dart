@@ -145,6 +145,10 @@ class _BillingPageState extends ConsumerState<BillingPage> {
               value: InvoiceStatusFilter.issued,
               label: Text('Issued'),
             ),
+            ButtonSegment(
+              value: InvoiceStatusFilter.cancelled,
+              label: Text('Cancelled'),
+            ),
           ],
           selected: {query.status},
           onSelectionChanged: (s) => notifier.setStatus(s.first),

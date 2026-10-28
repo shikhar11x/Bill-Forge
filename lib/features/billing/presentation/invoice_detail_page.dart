@@ -21,6 +21,7 @@ import 'package:billforge/features/billing/domain/discount.dart';
 import 'package:billforge/features/billing/domain/invoice.dart';
 import 'package:billforge/features/billing/domain/invoice_document.dart';
 import 'package:billforge/features/billing/presentation/widgets/invoice_list_items.dart';
+import 'package:billforge/features/billing/presentation/widgets/invoice_returns_section.dart';
 import 'package:billforge/features/billing/presentation/widgets/share_invoice_dialog.dart';
 import 'package:billforge/features/billing/presentation/widgets/totals_block.dart';
 import 'package:billforge/features/customers/application/customer_providers.dart';
@@ -273,6 +274,7 @@ class _DetailView extends ConsumerWidget {
                   ],
                 ),
               ),
+            if (!invoice.isDraft) InvoiceReturnsSection(invoice: invoice),
             AppCard(
               padding: EdgeInsets.zero,
               child: Column(

@@ -14,6 +14,9 @@ class InvoiceStatusBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (invoice.isCancelled) {
+      return const AppBadge(label: 'Cancelled', tone: BadgeTone.danger);
+    }
     if (invoice.isDraft) {
       return const AppBadge(label: 'Draft');
     }
