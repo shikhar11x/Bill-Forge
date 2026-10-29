@@ -13,13 +13,21 @@ class BrandMark extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final fill = color ?? Theme.of(context).colorScheme.primary;
     return Container(
       width: size,
       height: size,
       alignment: Alignment.center,
       decoration: BoxDecoration(
-        color: color ?? Theme.of(context).colorScheme.primary,
+        color: fill,
         borderRadius: BorderRadius.circular(AppRadius.sm + size / 16),
+        boxShadow: [
+          BoxShadow(
+            color: fill.withValues(alpha: 0.35),
+            blurRadius: size / 2.5,
+            offset: Offset(0, size / 8),
+          ),
+        ],
       ),
       child: Text(
         label,
