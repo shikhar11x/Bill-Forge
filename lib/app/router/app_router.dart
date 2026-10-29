@@ -35,12 +35,34 @@ import 'package:billforge/features/shop/application/shop_providers.dart';
 import 'package:billforge/features/shop/domain/shop_profile.dart';
 import 'package:billforge/features/shop/presentation/shop_setup_page.dart';
 
-Page<void> _noTransition(GoRouterState state, Widget child) =>
-    NoTransitionPage<void>(key: state.pageKey, child: child);
+Page<void> _fadePage(GoRouterState state, Widget child) =>
+    CustomTransitionPage<void>(
+      key: state.pageKey,
+      child: child,
+      transitionDuration: const Duration(milliseconds: 240),
+      reverseTransitionDuration: const Duration(milliseconds: 160),
+      transitionsBuilder: (context, animation, secondaryAnimation, child) {
+        if (MediaQuery.maybeDisableAnimationsOf(context) ?? false) return child;
+        final curved = CurvedAnimation(
+          parent: animation,
+          curve: Curves.easeOutCubic,
+        );
+        return FadeTransition(
+          opacity: curved,
+          child: SlideTransition(
+            position: Tween<Offset>(
+              begin: const Offset(0, 0.015),
+              end: Offset.zero,
+            ).animate(curved),
+            child: child,
+          ),
+        );
+      },
+    );
 
 GoRoute _shellRoute(String path, Widget child) => GoRoute(
   path: path,
-  pageBuilder: (context, state) => _noTransition(state, child),
+  pageBuilder: (context, state) => _fadePage(state, child),
 );
 
 final routerProvider = Provider<GoRouter>((ref) {
@@ -120,19 +142,19 @@ final routerProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: AppRoutes.billing,
             pageBuilder: (context, state) =>
-                _noTransition(state, const BillingPage()),
+                _fadePage(state, const BillingPage()),
             routes: [
               // 'new' must stay above ':id' so it isn't read as an invoice id.
               GoRoute(
                 path: 'new',
                 pageBuilder: (context, state) =>
-                    _noTransition(state, const PosPage()),
+                    _fadePage(state, const PosPage()),
               ),
               GoRoute(
                 path: 'credit-notes/:id',
                 pageBuilder: (context, state) {
                   final id = state.pathParameters['id']!;
-                  return _noTransition(
+                  return _fadePage(
                     state,
                     CreditNotePage(key: ValueKey(id), creditNoteId: id),
                   );
@@ -142,7 +164,7 @@ final routerProvider = Provider<GoRouter>((ref) {
                 path: ':id',
                 pageBuilder: (context, state) {
                   final id = state.pathParameters['id']!;
-                  return _noTransition(
+                  return _fadePage(
                     state,
                     InvoiceDetailPage(key: ValueKey(id), invoiceId: id),
                   );
@@ -152,7 +174,7 @@ final routerProvider = Provider<GoRouter>((ref) {
                     path: 'preview',
                     pageBuilder: (context, state) {
                       final id = state.pathParameters['id']!;
-                      return _noTransition(
+                      return _fadePage(
                         state,
                         InvoicePreviewPage(key: ValueKey(id), invoiceId: id),
                       );
@@ -162,7 +184,7 @@ final routerProvider = Provider<GoRouter>((ref) {
                     path: 'return',
                     pageBuilder: (context, state) {
                       final id = state.pathParameters['id']!;
-                      return _noTransition(
+                      return _fadePage(
                         state,
                         ReturnItemsPage(key: ValueKey(id), invoiceId: id),
                       );
@@ -175,18 +197,18 @@ final routerProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: AppRoutes.products,
             pageBuilder: (context, state) =>
-                _noTransition(state, const ProductsPage()),
+                _fadePage(state, const ProductsPage()),
             routes: [
               GoRoute(
                 path: 'new',
                 pageBuilder: (context, state) =>
-                    _noTransition(state, const ProductFormPage()),
+                    _fadePage(state, const ProductFormPage()),
               ),
               GoRoute(
                 path: ':id/edit',
                 pageBuilder: (context, state) {
                   final id = state.pathParameters['id']!;
-                  return _noTransition(
+                  return _fadePage(
                     state,
                     ProductFormPage(key: ValueKey(id), productId: id),
                   );
@@ -197,24 +219,24 @@ final routerProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: AppRoutes.customers,
             pageBuilder: (context, state) =>
-                _noTransition(state, const CustomersPage()),
+                _fadePage(state, const CustomersPage()),
             routes: [
               // Static paths ('new', 'outstanding') must stay above ':id'.
               GoRoute(
                 path: 'new',
                 pageBuilder: (context, state) =>
-                    _noTransition(state, const CustomerFormPage()),
+                    _fadePage(state, const CustomerFormPage()),
               ),
               GoRoute(
                 path: 'outstanding',
                 pageBuilder: (context, state) =>
-                    _noTransition(state, const OutstandingPage()),
+                    _fadePage(state, const OutstandingPage()),
               ),
               GoRoute(
                 path: ':id/edit',
                 pageBuilder: (context, state) {
                   final id = state.pathParameters['id']!;
-                  return _noTransition(
+                  return _fadePage(
                     state,
                     CustomerFormPage(key: ValueKey(id), customerId: id),
                   );
@@ -224,7 +246,7 @@ final routerProvider = Provider<GoRouter>((ref) {
                 path: ':id/statement',
                 pageBuilder: (context, state) {
                   final id = state.pathParameters['id']!;
-                  return _noTransition(
+                  return _fadePage(
                     state,
                     CustomerStatementPage(key: ValueKey(id), customerId: id),
                   );
@@ -234,7 +256,7 @@ final routerProvider = Provider<GoRouter>((ref) {
                 path: ':id',
                 pageBuilder: (context, state) {
                   final id = state.pathParameters['id']!;
-                  return _noTransition(
+                  return _fadePage(
                     state,
                     CustomerAccountPage(key: ValueKey(id), customerId: id),
                   );
@@ -245,19 +267,19 @@ final routerProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: AppRoutes.inventory,
             pageBuilder: (context, state) =>
-                _noTransition(state, const InventoryPage()),
+                _fadePage(state, const InventoryPage()),
             routes: [
               // 'purchases/new' must stay above 'purchases/:id'.
               GoRoute(
                 path: 'purchases/new',
                 pageBuilder: (context, state) =>
-                    _noTransition(state, const PurchaseFormPage()),
+                    _fadePage(state, const PurchaseFormPage()),
               ),
               GoRoute(
                 path: 'purchases/:id',
                 pageBuilder: (context, state) {
                   final id = state.pathParameters['id']!;
-                  return _noTransition(
+                  return _fadePage(
                     state,
                     PurchaseDetailPage(key: ValueKey(id), purchaseId: id),
                   );
@@ -267,7 +289,7 @@ final routerProvider = Provider<GoRouter>((ref) {
                 path: 'stock/:productId',
                 pageBuilder: (context, state) {
                   final id = state.pathParameters['productId']!;
-                  return _noTransition(
+                  return _fadePage(
                     state,
                     StockHistoryPage(key: ValueKey(id), productId: id),
                   );

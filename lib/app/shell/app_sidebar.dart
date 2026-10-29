@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:billforge/app/shell/shell_destinations.dart';
 import 'package:billforge/app/theme/app_spacing.dart';
 import 'package:billforge/core/constants/app_constants.dart';
-// import 'package:billforge/core/widgets/brand_mark.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-
+import 'package:billforge/core/motion/app_motion.dart';
 import 'package:billforge/features/shop/application/shop_providers.dart';
 import 'package:billforge/features/shop/presentation/widgets/shop_logo.dart';
 
@@ -22,11 +21,11 @@ class AppSidebar extends StatelessWidget {
   final ValueChanged<int> onSelected;
 
   Widget _item(int i) => _SidebarItem(
-    destination: shellDestinations[i],
-    selected: i == selectedIndex,
-    collapsed: collapsed,
-    onTap: () => onSelected(i),
-  );
+        destination: shellDestinations[i],
+        selected: i == selectedIndex,
+        collapsed: collapsed,
+        onTap: () => onSelected(i),
+      );
 
   @override
   Widget build(BuildContext context) {
@@ -41,9 +40,7 @@ class AppSidebar extends StatelessWidget {
     ];
 
     return Container(
-      width: collapsed
-          ? AppLayout.sidebarCollapsedWidth
-          : AppLayout.sidebarWidth,
+      width: collapsed ? AppLayout.sidebarCollapsedWidth : AppLayout.sidebarWidth,
       color: scheme.surface,
       child: SafeArea(
         child: Column(
@@ -82,9 +79,8 @@ class _Brand extends ConsumerWidget {
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
         child: Row(
-          mainAxisAlignment: collapsed
-              ? MainAxisAlignment.center
-              : MainAxisAlignment.start,
+          mainAxisAlignment:
+              collapsed ? MainAxisAlignment.center : MainAxisAlignment.start,
           children: [
             ShopLogo(shop: shop),
             if (!collapsed) ...[
@@ -105,7 +101,7 @@ class _Brand extends ConsumerWidget {
   }
 }
 
-class _SidebarItem extends StatelessWidget {
+class _SidebarItem extends StatefulWidget {
   const _SidebarItem({
     required this.destination,
     required this.selected,
@@ -119,9 +115,25 @@ class _SidebarItem extends StatelessWidget {
   final VoidCallback onTap;
 
   @override
+  State<_SidebarItem> createState() => _SidebarItemState();
+}
+
+class _SidebarItemState extends State<_SidebarItem> {
+  bool _hover = false;
+
+  @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
+    final selected = widget.selected;
+    final collapsed = widget.collapsed;
+    final destination = widget.destination;
     final color = selected ? scheme.primary : scheme.onSurfaceVariant;
+    final background = selected
+        ? scheme.primary.withValues(alpha: 0.14)
+        : (_hover
+            ? scheme.onSurface.withValues(alpha: 0.06)
+            : Colors.transparent);
+    final duration = AppMotion.of(context, AppMotion.fast);
 
     return Padding(
       padding: const EdgeInsets.only(bottom: AppSpacing.xs),
@@ -132,23 +144,47 @@ class _SidebarItem extends StatelessWidget {
         child: Tooltip(
           message: collapsed ? destination.label : '',
           child: Material(
-            color: selected
-                ? scheme.primary.withValues(alpha: 0.12)
-                : Colors.transparent,
-            borderRadius: BorderRadius.circular(AppRadius.md),
+            color: Colors.transparent,
             child: InkWell(
               borderRadius: BorderRadius.circular(AppRadius.md),
-              onTap: onTap,
-              child: Padding(
+              hoverColor: Colors.transparent,
+              onTap: widget.onTap,
+              onHover: (hovering) => setState(() => _hover = hovering),
+              child: AnimatedContainer(
+                duration: duration,
+                curve: AppMotion.standard,
                 padding: const EdgeInsets.all(AppSpacing.md),
+                decoration: BoxDecoration(
+                  color: background,
+                  borderRadius: BorderRadius.circular(AppRadius.md),
+                ),
                 child: Row(
                   mainAxisAlignment: collapsed
                       ? MainAxisAlignment.center
                       : MainAxisAlignment.start,
                   children: [
-                    Icon(
-                      selected ? destination.selectedIcon : destination.icon,
-                      color: color,
+                    // Accent bar that slides in beside the selected item.
+                    AnimatedContainer(
+                      duration: duration,
+                      curve: AppMotion.standard,
+                      width: selected && !collapsed ? 3 : 0,
+                      height: 18,
+                      margin: EdgeInsets.only(
+                        right: selected && !collapsed ? AppSpacing.sm : 0,
+                      ),
+                      decoration: BoxDecoration(
+                        color: scheme.primary,
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                    ),
+                    AnimatedScale(
+                      scale: (_hover || selected) ? 1.1 : 1,
+                      duration: duration,
+                      curve: AppMotion.standard,
+                      child: Icon(
+                        selected ? destination.selectedIcon : destination.icon,
+                        color: color,
+                      ),
                     ),
                     if (!collapsed) ...[
                       const SizedBox(width: AppSpacing.md),
@@ -156,9 +192,8 @@ class _SidebarItem extends StatelessWidget {
                         destination.label,
                         style: TextStyle(
                           color: selected ? scheme.onSurface : color,
-                          fontWeight: selected
-                              ? FontWeight.w600
-                              : FontWeight.w500,
+                          fontWeight:
+                              selected ? FontWeight.w600 : FontWeight.w500,
                         ),
                       ),
                     ],
