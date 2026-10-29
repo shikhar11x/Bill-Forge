@@ -139,4 +139,40 @@ void main() {
 
     expect(find.text('Sales overview'), findsOneWidget);
   });
+
+  testWidgets('the hero greets and offers quick actions', (tester) async {
+    await pumpDashboard(tester);
+
+    expect(find.textContaining('Welcome back'), findsOneWidget);
+    expect(find.text('New bill'), findsOneWidget);
+    expect(find.text('Add product'), findsOneWidget);
+    expect(
+      find.text('No sales yet today. Ready to make the first bill?'),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets('the hero summarises todays sales', (tester) async {
+    final now = DateTime.now();
+    await pumpDashboard(
+      tester,
+      data: ReportData(
+        invoices: [
+          sampleOpenInvoice(
+            id: 'i1',
+            total: 100000,
+            paid: 100000,
+            issuedAt: now,
+          ),
+        ],
+        invoiceItems: [rItem(invoiceId: 'i1')],
+        payments: [rPayment(paidAt: now)],
+      ),
+    );
+
+    expect(
+      find.text('1 bill and ₹1,000.00 in sales so far today.'),
+      findsOneWidget,
+    );
+  });
 }
